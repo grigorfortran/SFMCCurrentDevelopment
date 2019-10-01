@@ -307,7 +307,7 @@
                     <div id="logincontent" class="collapse in">
                         <div class="form-group description"
                             style="padding:20px 20px 20px 20px;width:25%;background-color:#eff9fe;">
-                            <label for="txtUsername">Username:</label>
+                            <label for="txtUsername">U111sername:</label>
                             <input id="txtUsername" name="txtUsername" placeholder="Username..." autocomplete="off"
                                 style="width:100%" class="form-control" value="">
                             <div class="errPosition"><span class="errMsg" id="errUsername"></span></div>
@@ -877,7 +877,8 @@
                         filename: getExportFileName(),
                         action: function (e, dt, node, config) {
                             alert(
-                                'SQL Copied! This is due to be developed.... Half way through... Sorry!')
+                                'SQL Copied! This is due to be developed.... Half way through... Sorry!'
+                                )
 
                         }
                     }
@@ -1271,7 +1272,7 @@
 
             $('#txtContentSwitcher').change(function () {
                 $('#contenttypetxt').text("Account " + $(this).find('option:selected').text() +
-                " Tree");
+                    " Tree");
                 if ($("#txtContentSwitcher").val() == "dataextension") {
                     //$('#buildDEDefinitionTable').show()
                     $('#deDetails').show()
@@ -1360,7 +1361,7 @@
                         '" style="float: left; margin-right: 1%; margin-bottom: 0.5em; height:30px;width:50px;display: inline;" alt="Loading"/><img id="img-spinner" src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/loading_bar.gif" style="float: left; margin-right: 1%; margin-bottom: 0.5em; height:30px;width:180px;display: inline;float: left;" alt="Loading"/><img id="img-spinner" src="' +
                         timer_url +
                         '" style="float: left; margin-right: 1%; margin-bottom: 0.5em; height:30px;width:50px;display: inline;" alt="Loading"/><p style="clear: both;"></div></div>'
-                        );
+                    );
 
                     //var seconds = 0;
                     //var el = document.getElementById('seconds-counter');
@@ -1375,7 +1376,8 @@
                         extensions: ["filter"],
                         quicksearch: true,
                         source: getJSONTree($("#txtContentSwitcher")
-                    .val()), // {url: "http://wwwendt.de/tech/fancytree/demo/ajax-tree-local.json?_=1516312467428"}, 
+                            .val()
+                            ), // {url: "http://wwwendt.de/tech/fancytree/demo/ajax-tree-local.json?_=1516312467428"}, 
 
                         filter: {
                             autoApply: true, // Re-apply last filter if lazy data is loaded
@@ -1651,9 +1653,11 @@
                                 elementDetails.key = curMID + "_" + reqFolderObj[f]["ID"]["#text"];
                                 if (ContentType === "list") {
                                     elementDetails.title = capitalizeFirstLetter(reqFolderObj[f]["Name"][
-                                        "#text"]);
+                                        "#text"
+                                    ]);
                                     elementDetails.Name = capitalizeFirstLetter(reqFolderObj[f]["Name"][
-                                        "#text"]);
+                                        "#text"
+                                    ]);
                                 } else {
                                     elementDetails.title = reqFolderObj[f]["Name"]["#text"]
                                     elementDetails.Name = reqFolderObj[f]["Name"]["#text"]
@@ -1939,7 +1943,8 @@
                                                                 "Description"
                                                             ]["#text"] === "undefined" ? "" :
                                                             reqFolderContentObj[c][
-                                                                "Description"]["#text"])),
+                                                                "Description"
+                                                            ]["#text"])),
                                                         "CreatedDate": reqFolderContentObj[c][
                                                             "CreatedDate"
                                                         ]["#text"],
@@ -2049,7 +2054,8 @@
                                                 ]
                                                 elementDetails.title = '<span class="my-title" title="' +
                                                     tooltiptxt + '">' + reqFolderContentObj[c]["Name"][
-                                                    "#text"] + "</span>  " + filterDefintionButton
+                                                        "#text"
+                                                    ] + "</span>  " + filterDefintionButton
                                                 elementDetails.Name = reqFolderContentObj[c]["Name"]["#text"]
                                                 elementDetails.Parent = curMID + "_" + reqFolderContentObj[c][
                                                     "CategoryID"
@@ -2085,7 +2091,8 @@
                                                         "#text"
                                                     ] + "</i><br>" +
                                                     "<i>ObjectID: " + reqFolderContentObj[c]["ObjectID"][
-                                                        "#text"] + "</i><br>" +
+                                                        "#text"
+                                                    ] + "</i><br>" +
                                                     "<i>AllowErrors: " + reqFolderContentObj[c]["AllowErrors"][
                                                         "#text"
                                                     ] + "</i><br>" +
@@ -2108,9 +2115,11 @@
                                                         "FieldMappingType"
                                                     ]["#text"] + "</i><br>" +
                                                     "<i>FileSpec: " + reqFolderContentObj[c]["FileSpec"][
-                                                        "#text"] + "</i><br>" +
+                                                        "#text"
+                                                    ] + "</i><br>" +
                                                     "<i>FileType: " + reqFolderContentObj[c]["FileType"][
-                                                        "#text"] + "</i><br>" +
+                                                        "#text"
+                                                    ] + "</i><br>" +
                                                     "<i>DateFormattingLocale: " + reqFolderContentObj[c][
                                                         "DateFormattingLocale"
                                                     ]["LocaleCode"]["#text"] + "</i><br>" +
@@ -2157,7 +2166,8 @@
                                                 ]
                                                 elementDetails.title = '<span class="my-title" title="' +
                                                     tooltiptxt + '">' + reqFolderContentObj[c]["Name"][
-                                                    "#text"] + "</span>  " + importActivityButton
+                                                        "#text"
+                                                    ] + "</span>  " + importActivityButton
                                                 elementDetails.Name = reqFolderContentObj[c]["Name"]["#text"]
                                                 if (resultSize == 0) {
                                                     elementDetails.Parent = curMID + "_IMPORT_ACTIVITY_0"
@@ -2266,12 +2276,14 @@
                                                     tooltiptxt + '">' + reqFolderContentObj[c]["ListName"][
                                                         "#text"
                                                     ] + " <small>(ID:<b>" + reqFolderContentObj[c]["ID"][
-                                                        "#text"] + "</b>)</small> <small>Count:" +
+                                                        "#text"
+                                                    ] + "</b>)</small> <small>Count:" +
                                                     " <b>PlaceHolderCount" + reqFolderContentObj[c]["ID"][
                                                         "#text"
                                                     ] + "</b></small></span>"
                                                 elementDetails.Name = reqFolderContentObj[c]["ListName"][
-                                                    "#text"]
+                                                    "#text"
+                                                ]
                                                 elementDetails.Parent = curMID + "_" + reqFolderContentObj[c][
                                                     "Category"
                                                 ]["#text"]
@@ -2326,7 +2338,8 @@
                                                 ];
                                                 elementDetails.title = '<span class="my-title" title="' +
                                                     tooltiptxt + '">' + reqFolderContentObj[c]["Name"][
-                                                    "#text"] + "</span>"
+                                                        "#text"
+                                                    ] + "</span>"
                                                 elementDetails.Name = reqFolderContentObj[c]["Name"]["#text"]
                                                 elementDetails.Parent = curMID + "_" + reqFolderContentObj[c][
                                                     "CategoryID"
@@ -2349,7 +2362,8 @@
                                                                 "Description"
                                                             ]["#text"] === "undefined" ? "" :
                                                             reqFolderContentObj[c][
-                                                                "Description"]["#text"])),
+                                                                "Description"
+                                                            ]["#text"])),
                                                         "CategoryID": reqFolderContentObj[c][
                                                             "CategoryID"
                                                         ]["#text"],
@@ -2370,7 +2384,8 @@
                                                         ]["#text"],
                                                         "QueryText": "<pre class='prettyprint'>" +
                                                             reqFolderContentObj[c]["QueryText"][
-                                                            "#text"] + "</pre></i><br>"
+                                                                "#text"
+                                                            ] + "</pre></i><br>"
                                                     })
                                                 }
                                             } catch (err) {
@@ -2414,7 +2429,8 @@
                                                 ];
                                                 elementDetails.title = '<span class="my-title" title="' +
                                                     tooltiptxt + '">' + reqFolderContentObj[c]["Name"][
-                                                    "#text"] + "</span>"
+                                                        "#text"
+                                                    ] + "</span>"
                                                 elementDetails.Name = reqFolderContentObj[c]["Name"]["#text"]
                                                 elementDetails.Parent = curMID +
                                                     "_0" //+ reqFolderContentObj[c]["CategoryID"]["#text"];
