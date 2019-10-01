@@ -1,0 +1,2968 @@
+<script runat="server">
+    Platform.Load("core", "1")
+
+    var LogData = {
+        "Page Name": "AccountObjectTree",
+        "Date": Platform.Function.SystemDateToLocalDate(Now()),
+        "ReferrerURL": Platform.Request.ReferrerURL(),
+        "RequestURL": Platform.Request.RequestURL(),
+        "UserAgent": Platform.Request.UserAgent(),
+        "Browser": Platform.Request.Browser(),
+        "ClientIP": Platform.Request.ClientIP(),
+        "GetUserLanguages": Stringify(Platform.Function.GetUserLanguages()),
+        "GeoLocation": Platform.Function.HTTPGet("https://tools.keycdn.com/geo.json?host=" + Platform.Request
+            .ClientIP())
+    }
+
+    var LogDataExtension = DataExtension.Init("AccountObjectPage_Log")
+    var status = LogDataExtension.Rows.Add(LogData)
+</script>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <title>Content Tree Builder</title>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+
+    <script async="" src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/analytics.js"></script>
+    <script src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/jquery-3.2.1.min.js"></script>
+
+    <script type="text/javascript" src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/xml2json.js">
+    </script>
+
+    <!-- Data tables -->
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/r/bs-3.3.5/jq-2.1.4,dt-1.10.8/datatables.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.9/css/bootstrap-dialog.min.css"
+        rel="stylesheet" type="text/css">
+    <link href="https://cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css" rel="stylesheet"
+        type="text/css">
+    <script type="text/javascript" src="https://cdn.datatables.net/r/bs-3.3.5/jqc-1.11.3,dt-1.10.8/datatables.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.9/js/bootstrap-dialog.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.flash.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+
+    <script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.colVis.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Data tables -->
+
+
+
+    <script src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/jquery-ui.min.js"></script>
+    <link href="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/ui.fancytree.css" rel="stylesheet"
+        class="skinswitcher">
+    <script src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/jquery.fancytree.js"></script>
+    <script src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/jquery.fancytree.filter.js"></script>
+
+    <!-- Start_Exclude: This block is not part of the sample code -->
+    <link href="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/prettify.css" rel="stylesheet">
+    <script src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/prettify.js"></script>
+    <link href="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/sample.css" rel="stylesheet">
+    <script src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/sample.js"></script>
+    <!-- End_Exclude -->
+
+    <!-- jBox -->
+    <script src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/0.4.9_jBox.js"></script>
+    <link href="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/0.4.9_jBox.css" rel="stylesheet">
+
+
+    <style type="text/css">
+        .errPosition {
+            display: block;
+            float: left;
+            width: 100%;
+            text-align: right;
+        }
+
+        .errPosition_ {
+            display: block;
+            float: right;
+            width: 100%;
+            text-align: right;
+            padding-right: 13%;
+        }
+
+        .errMsg {
+            font: 12px/16px Arial, Helvetica, sans-serif;
+            color: #D0011B;
+            text-align: right;
+        }
+
+        .errShadow {
+            -webkit-box-shadow: 0px 0px 40px -6px rgba(253, 138, 167, 1);
+            -moz-box-shadow: 0px 0px 40px -6px rgba(253, 138, 167, 1);
+            box-shadow: 0px 0px 40px -6px rgba(253, 138, 167, 1);
+        }
+
+        .spinner {
+            position: relative;
+            top: 50%;
+            left: 0%;
+            margin-left: 0px;
+            /* half width of the spinner gif */
+            margin-top: 0px;
+            /* half height of the spinner gif */
+            text-align: center;
+            z-index: 1234;
+            width: 300px;
+            /* width of the spinner gif */
+            height: 30px;
+            /*hight of the spinner gif +2px to fix IE8 issue */
+        }
+
+        .mark,
+        mark {
+            background-color: #d4ff32;
+            padding: 0.1em;
+        }
+
+        .json-key {
+            color: brown;
+        }
+
+        .json-value {
+            color: navy;
+        }
+
+        .json-boolean {
+            color: teal;
+        }
+
+        .json-string {
+            color: olive;
+        }
+
+        pre {
+            min-height: 350px;
+            font-size: 1.5rem;
+            color: black;
+            background-color: white;
+            border: 5px solid silver;
+            padding: 5px 10px;
+            margin: 0px;
+            overflow: scroll;
+        }
+
+        pre {
+            min-height: 200px;
+        }
+    </style>
+
+
+    <style charset="utf-8" type="text/css">
+        fieldset.border {
+            border: 2px groove threedlightshadow;
+            display: block;
+            margin-inline-end: 2px;
+            margin-inline-start: 2px;
+            min-width: -moz-min-content;
+            padding-block-end: 0.75em;
+            padding-block-start: 0.35em;
+            padding-inline-end: 0.625em;
+            padding-inline-start: 0.625em;
+            margin-bottom: 10px;
+        }
+
+        legend.border {
+            inline-size: -moz-fit-content;
+            padding-inline-end: 2px;
+            padding-inline-start: 2px;
+            display: block;
+            margin-top: 10px;
+        }
+
+        [data-toggle="collapse"].collapsed .if-not-collapsed {
+            display: none;
+        }
+
+        [data-toggle="collapse"]:not(.collapsed) .if-collapsed {
+            display: none;
+        }
+
+        .top1 {
+            margin-top: 10px;
+        }
+
+        .top2 {
+            margin-top: 20px;
+        }
+
+        .top3 {
+            margin-top: 30px;
+        }
+
+        .top4 {
+            margin-top: 40px;
+        }
+
+        .top5 {
+            margin-top: 50px;
+        }
+
+        .top6 {
+            margin-top: 60px;
+        }
+
+        .bot1 {
+            margin-bottom: 10px;
+        }
+
+        .bot2 {
+            margin-bottom: 20px;
+        }
+
+        .bot3 {
+            margin-bottom: 30px;
+        }
+
+        .bot4 {
+            margin-bottom: 40px;
+        }
+
+        .bot5 {
+            margin-bottom: 50px;
+        }
+
+        .bot6 {
+            margin-bottom: 60px;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .table-hover thead tr:hover th,
+        .table-hover tbody tr:hover td {
+            background-color: #d9edf7;
+        }
+
+        .table-striped>tbody>tr:nth-of-type(2n+1) {
+            background-color: #eff9fe;
+        }
+
+        .modal {
+            text-align: center;
+            padding: 0 !important;
+        }
+
+        .modal:before {
+            content: '';
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+            margin-right: -4px;
+        }
+
+        .modal-dialog {
+            display: inline-block;
+            text-align: left;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body class="fuelux" style="padding:20px;">
+    <div id="loader"
+        style="background-color:#FFF;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999999;opacity:0.75;">
+        <div id="loader" class="loader" data-initialize="loader"
+            style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+    </div>
+    <div class="alert alert-danger alert-dismissable fade in" id="errorbox">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <span><strong>Error</strong> an error occurred</span>
+    </div>
+    <div class="alert alert-success alert-dismissable fade in" id="successbox">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <span><strong>Success</strong> something good happened</span>
+    </div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h2 id="contenttypetxt" style="text-align: center;">Account Object Tree </h2>
+        </div>
+        <div class="panel-body">
+            <div class="col-md-12">
+                <div class="row" style="padding-left:20px;">
+                    <!-- <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#logincontent">Login and Content Select Panel</button> -->
+                    <a href="#" class="btn btn-primary" data-toggle="collapse" data-target="#logincontent"
+                        role="button">
+                        <span class="if-collapsed">Open: Login\Content Panel</span>
+                        <span class="if-not-collapsed">Hide: Login\Content Panel</span>
+                    </a>
+                </div>
+                <div class="row" style="padding-left:20px;">
+                    <div id="logincontent" class="collapse in">
+                        <div class="form-group description"
+                            style="padding:20px 20px 20px 20px;width:25%;background-color:#eff9fe;">
+                            <label for="txtUsername">Username:</label>
+                            <input id="txtUsername" name="txtUsername" placeholder="Username..." autocomplete="off"
+                                style="width:100%" class="form-control" value="">
+                            <div class="errPosition"><span class="errMsg" id="errUsername"></span></div>
+                            <label for="txtPassword">Password:</label>
+                            <input id="txtPassword" type="password" name="txtPassword" placeholder="Password..."
+                                autocomplete="off" style="width:100%" class="form-control" value="">
+                            <label for="txtClientId">Client Id:</label>
+                            <input id="txtClientId" name="txtClientId" placeholder="ClientId..." autocomplete="off"
+                                style="width:100%" class="form-control" value="">
+                            <label for="txtClientSecret">Client Secret:</label>
+                            <input id="txtClientSecret" name="txtClientSecret" placeholder="ClientSecret..."
+                                autocomplete="off" style="width:100%" class="form-control" value="">
+                            <div class="errPosition"><span class="errMsg" id="errPassword"></span></div>
+                            <label for="txtContentSwitcher">Content:</label>
+                            <select style="width:100%" class="form-control" id="txtContentSwitcher">
+                                <option value="" selected="true" disabled="disabled">Choose Content</option>
+                                <!-- 										<option value="ABTest" disabled="disabled">AB test</option>
+                                                <option value="asset" disabled="disabled">Asset</option>
+                                                <option value="automated_email" disabled="disabled">Simple Automated Emails</option> -->
+                                <option value="automations">Automations</option>
+                                <!--										<option value="BuildAudienceActivity" disabled="disabled">Build Audience Activity</option>
+                                                <option value="campaign" disabled="disabled">Campaign</option>
+                                                <option value="condensedlpview" disabled="disabled">Condensed Preview</option> -->
+                                <!--											<option value="content">My Contents</option> -->
+                                <!-- 											<option value="contextual_suppression_list" disabled="disabled">Contextual Suppression List</option> -->
+                                <option value="dataextension">Data Extensions</option>
+                                <!-- 										<option value="document" disabled="disabled">My Documents</option> -->
+                                <option value="ELTactivity">Import Activity(ELT Activity)</option>
+                                <!-- <option value="email">My Emails</option>
+    <!-- 										<option value="email_hidden_messagemodel" disabled="disabled">Email Hidden Message Model</option>
+                                                <option value="filteractivity" disabled="disabled">Filter Activities</option> -->
+                                <option value="filterdefinition">Data Filters</option>
+                                <!--										<option value="global_email" disabled="disabled">Global Email</option>
+                                                <option value="global_email_sub" disabled="disabled">Global Email Subscribers</option> -->
+                                <!-- 											<option value="group" disabled="disabled">My Groups</option> -->
+                                <!-- 											<option value="Hidden" disabled="disabled">Hidden</option>
+                                                <option value="image" disabled="disabled">My Images</option>
+                                                <option value="job" disabled="disabled">My Tracking</option> -->
+                                <option value="list">My Lists</option>
+                                <!-- 											<option value="livecontent" disabled="disabled">Live Content</option>
+                                                <option value="measure" disabled="disabled">Measures</option> -->
+                                <!-- <option value="media">Portfolio</option> -->
+                                <!-- 		<option value="message" disabled="disabled">Message</option>
+                                                <option value="microsite" disabled="disabled">Microsites</option>
+                                                <option value="micrositelayout" disabled="disabled">Microsite Layouts</option>       
+                                                <option value="mysubs" disabled="disabled">My Subscribers</option>
+                                                <option value="organization" disabled="disabled">Organizations</option>
+                                                <option value="playbooks" disabled="disabled">Playbooks</option>
+                                                <option value="programs2" disabled="disabled">Programs</option>
+                                                <option value="publication" disabled="disabled">Publication Lists</option> -->
+                                <option value="queryactivity" selected="true">Query Activity</option>
+                                <!-- 			<option value="salesforcedataextension" disabled="disabled">Salesforce Data Extension</option>
+                                                <option value="salesforcesends" disabled="disabled">Salesforce Sends</option>
+                                                <option value="salesforcesendsv5" disabled="disabled">Salesforce Sends v5</option>
+                                                <option value="shared_content" disabled="disabled">Shared Content</option>
+                                                <option value="shared_contextual_suppression_list" disabled="disabled">Shared Contextual Suppression List</option>
+                                                <option value="shared_data" disabled="disabled">Shared Data</option>
+                                                <option value="shared_dataextension" disabled="disabled">Shared Data Extensions</option>
+                                                <option value="shared_email" disabled="disabled">Shared Email Messages</option>
+                                                <option value="shared_item" disabled="disabled">Shared Items</option>
+                                                <option value="shared_portfolio" disabled="disabled">Shared Portfolios</option>
+                                                <option value="shared_publication" disabled="disabled">Shared Publication Lists</option>
+                                                <option value="shared_salesforcedataextension" disabled="disabled">Shared Salesforce Data Extension</option>
+                                                <option value="shared_suppression_list" disabled="disabled">Shared Suppression lists</option>
+                                                <option value="shared_survey" disabled="disabled">Shared Surveys</option>
+                                                <option value="shared_template" disabled="disabled">Shared Templates</option>
+                                                <option value="ssjsactivity" disabled="disabled">SSJS Activity</option>
+                                                <option value="suppression_list" disabled="disabled">Suppression Lists</option>
+                                                <option value="survey" disabled="disabled">My Surveys</option>
+                                                <option value="synchronizeddataextension" disabled="disabled">Synchronized Data Extension</option>
+                                                <option value="template" disabled="disabled">My Templates</option> -->
+                                <!-- 											<option value="triggered_send">Triggered Sends</option>
+                                                <option value="triggered_send_journeybuilder">Triggered Sends Journey Builder</option>
+                                                <option value="userinitiatedsends">User-initiated Sends</option> -->
+                            </select>
+                            <div class="errPosition"><span class="errMsg" id="errContentSwitcher"></span></div>
+                            <br>
+                            <div id="deDetails" hidden>
+                                <div class="row bot1">
+                                    <div class="col-lg-6">
+                                        <label for="addSubscriberRelationship">
+                                            <input id="addSubscriberRelationship" checked="checked" type="checkbox"
+                                                autocomplete="off">
+                                            Add Subscriber Relationship Field
+                                        </label>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label for="addExternalKey">
+                                            <input id="addExternalKey" checked="checked" type="checkbox"
+                                                autocomplete="off">
+                                            Add DE External Key
+                                        </label>
+                                    </div>
+
+                                </div>
+                                <div class="row bot1">
+                                    <div class="col-lg-6">
+                                        <label for="addDataExtensionList">
+                                            <input id="addDataExtensionList" checked="checked" type="checkbox"
+                                                autocomplete="off">
+                                            Create Data Extension List
+                                        </label>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label for="addSchemaDefinition">
+                                            <input id="addSchemaDefinition" checked="checked" type="checkbox"
+                                                autocomplete="off">
+                                            Include DE Schema Definition
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="importDetails" hidden>
+                                <div class="row bot1">
+                                    <div class="col-lg-12">
+                                        <label for="addImportActivityList">
+                                            <input id="addImportActivityList" checked="checked" type="checkbox"
+                                                autocomplete="off">
+                                            Create Import Activities List
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="sqlDetails" hidden>
+                                <div class="row bot1">
+                                    <div class="col-lg-12">
+                                        <label for="addSQLActivityList">
+                                            <input id="addSQLActivityList" checked="checked" type="checkbox"
+                                                autocomplete="off">
+                                            Create SQL Activities List
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <button id="btnBuildTree" class="btn btn-primary top-buffer" style="width:100%;">Build
+                                Tree</button>
+                        </div>
+                    </div>
+                    <div style="display:none">
+                        <label for="skinswitcher">Skin:</label> <select id="skinswitcher">
+                            <option value="xp">XP</option>
+                            <option value="vista">Vista (classic Dynatree)</option>
+                            <option value="win7">Win7</option>
+                            <option value="win8">Win8</option>
+                            <option value="win8n">Win8-N</option>
+                            <option value="win8xxl">Win8 xxl</option>
+                            <option value="lion">Lion</option>
+                        </select><label id="connectorsSwitch"><input name="cbConnectors"
+                                type="checkbox">Connectors</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <fieldset class="border">
+                        <legend class="border">Options</legend>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="input-group">
+                                    <span class="input-group-addon">Filter</span>
+                                    <input id="filter" name="search" placeholder="Filter..." autocomplete="off"
+                                        class="form-control">
+                                    <span class="input-group-btn">
+                                        <button id="btnResetSearch" disabled="disabled"
+                                            class="btn btn-primary">X</button>
+                                    </span>
+                                    <span id="matches" class="input-group-addon"
+                                        style="background:#fff;border:none;padding-left:2px; width:15%;"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-lg-2">
+                                <label for="regex">
+                                    <input id="regex" type="checkbox">
+                                    Regular expression
+                                </label>
+                                <br>
+                                <label for="hideMode">
+                                    <input id="hideMode" type="checkbox">
+                                    Hide unmatched nodes
+                                </label>
+                                <br>
+                                <label for="autoExpand">
+                                    <input id="autoExpand" checked="checked" type="checkbox">
+                                    Auto expand
+                                </label>
+                                <br>
+                                <label for="branchMode">
+                                    <input id="branchMode" type="checkbox">
+                                    Match whole branch
+                                </label>
+                                <br>
+                                <label for="leavesOnly">
+                                    <input id="leavesOnly" type="checkbox">
+                                    Match end nodes only
+                                </label>
+                                <!-- 										<label for="buildDEDefinitionTable" id="buildDEDefinitionTable" style="display:none">
+                                                <input id="buildDEDefinition" type="checkbox">
+                                                Build DE Definiton table
+                                            </label> -->
+                            </div>
+                            <div class="col-lg-2">
+                                <label for="fuzzy">
+                                    <input id="fuzzy" type="checkbox">
+                                    Fuzzy
+                                </label>
+                                <br>
+                                <label for="hideExpanders">
+                                    <input id="hideExpanders" type="checkbox">
+                                    hideExpanders
+                                </label>
+                                <br>
+                                <label for="highlight">
+                                    <input id="highlight" checked="checked" type="checkbox">
+                                    Highlight
+                                </label>
+                                <label for="nodata" style="display:none;">
+                                    <input id="nodata" checked="checked" type="checkbox">
+                                    nodata
+                                </label>
+                                <br>
+                                <label for="counter">
+                                    <input id="counter" checked="checked" type="checkbox">
+                                    Add counter badges
+                                </label>
+                                <br>
+                                <label for="hideExpandedCounter">
+                                    <input id="hideExpandedCounter" checked="checked" type="checkbox">
+                                    hideExpandedCounter
+                                </label>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <!-- End_Exclude -->
+                                <div id="sampleButtons" class="input-group">
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="row">
+                    <div class="modal fade" id="genericModalForm" tabindex="-1" role="dialog"
+                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header bg-primary">
+                                    <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <pre class='json'></pre>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-7">
+                        <div id="prog"></div>
+                        <!-- Add a <table> element where the tree should appear: -->
+                        <div id="tree_container">
+                            <div id="seconds-counter"> </div>
+                            <!-- 	 <h4>Result Final String</h4>
+                                    <pre id="finaljsnstr"></pre><hr width="33%" /><br/> -->
+
+                            <div id="tree">
+                                <ul class="ui-fancytree fancytree-container fancytree-plain" tabindex="0" role="tree"
+                                    aria-multiselectable="true">
+                                    <li role="treeitem" aria-selected="false"><span
+                                            class="fancytree-node fancytree-exp-n fancytree-ico-c"><span
+                                                class="fancytree-expander"></span><img class="fancytree-icon"
+                                                src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/dataextension.png"
+                                                alt=""><span class="fancytree-title">Data Extension
+                                                Example</span></span></li>
+                                    <li role="treeitem" aria-selected="false"><span
+                                            class="fancytree-node fancytree-exp-n fancytree-ico-c"><span
+                                                class="fancytree-expander"></span><img class="fancytree-icon"
+                                                src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/sqlactivity.png"
+                                                alt=""><span class="fancytree-title" title="Look, a tool tip!">SQL Query
+                                                Activity Example</span></span></li>
+                                    <li role="treeitem" aria-selected="false"><span
+                                            class="fancytree-node fancytree-exp-n fancytree-ico-c"><span
+                                                class="fancytree-expander"></span><img class="fancytree-icon"
+                                                src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/importactivity.png"
+                                                alt=""><span class="fancytree-title"><span>Import Activity
+                                                    Example</span></span></span></li>
+                                    <li role="treeitem" aria-selected="false"><span
+                                            class="fancytree-node fancytree-exp-n fancytree-ico-c"><span
+                                                class="fancytree-expander"></span><img class="fancytree-icon"
+                                                src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/exportactivity.png"
+                                                alt=""><span class="fancytree-title"><span>Export Activity
+                                                    Example</span></span></span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Start_Exclude: This block is not part of the sample code -->
+                        <hr>
+                        <pre id="sourceCode" class="prettyprint" style="display:none"></pre>
+                        <!-- End_Exclude -->
+                    </div>
+                    <div class="col-lg-5" id="buildDEDefinitionRow"
+                        style="min-height: 100px; display:none;border: 1px dotted gray;">
+                        <!-- <div class="border" style="min-height: 100px;"> -->
+                        <legend id="deDefinitionLegend" class="border">Data Extension Definition</legend>
+                        <div id="dedefinition_spinner"
+                            style="background-color:#FFF;position:absolute;margin:10px;top:55px;left:28px;right:28px;bottom:50px;z-index:9999999;opacity:0.75;">
+                            <div id="dedefinition_spinner" class="loader" data-initialize="loader"
+                                style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">
+                                <img class="loading-image"
+                                    src="https://image.s7.exacttarget.com/lib/fe8f13737461037970/m/1/SFMC_loading_52x52.gif"
+                                    alt="loading..">
+                            </div>
+                        </div>
+
+                        <div id="datatable">
+                            <table id="deDefinition"
+                                class="table table-striped table-bordered table-condensed table-hover table-responsive dataTable no-footer"
+                                style="width:100%">
+                                <thead style="background-color: #d9edf7;">
+                                    <tr>
+                                        <th>Order</th>
+                                        <th>Name</th>
+                                        <th>Data Type</th>
+                                        <th>Lengh</th>
+                                        <th>Primary Key</th>
+                                        <th>Required</th>
+                                        <th>Default Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- </div> -->
+                    </div>
+                </div>
+                <div id="dataExtensionList" class="row" hidden>
+                    <table id="deList"
+                        class="table table-striped table-bordered table-condensed table-hover table-responsive dataTable no-footer"
+                        style="width:100%">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>MID</th>
+                                <th>DE Name</th>
+                                <th>External Key</th>
+                                <th>Description</th>
+                                <th>Created Date</th>
+                                <th>Modified Date</th>
+                                <th>Is Sendable</th>
+                                <th>Is Testable</th>
+                                <th>Subscriber Relationship Field</th>
+                                <th>Full Path</th>
+                                <th>Field List</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="importActivityList" class="row" hidden>
+                    <table id="importList"
+                        class="table table-striped table-bordered table-condensed table-hover table-responsive dataTable no-footer"
+                        style="width:100%">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>MID</th>
+                                <th>Import Activity Name</th>
+                                <th>External Key</th>
+                                <th>Description</th>
+                                <th>Delimiter</th>
+                                <th>Destination Object ID</th>
+                                <th>Destination Object ObjectID</th>
+                                <th>Field Mapping Type</th>
+                                <th>File Specification</th>
+                                <th>File Type</th>
+                                <th>Date Formatting Locale</th>
+                                <th>Header Lines</th>
+                                <th>MaxFile Age</th>
+                                <th>MaxFile Age Schedule Offset</th>
+                                <th>MaxImportFrequency</th>
+                                <th>Notification Response Address</th>
+                                <th>Notification Response Type</th>
+                                <th>File Transfer Location ObjectID</th>
+                                <th>UpdateType</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="sqlActivityList" class="row" hidden>
+                    <table id="sqlList"
+                        class="table table-striped table-bordered table-condensed table-hover table-responsive dataTable no-footer"
+                        style="width:100%">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>MID</th>
+                                <th>SQL Activity Name</th>
+                                <th>External Key</th>
+                                <th>Description</th>
+                                <th>Created Date</th>
+                                <th>Modified Date</th>
+                                <th>Target DE Name</th>
+                                <th>Target DE CustomerKey</th>
+                                <th>TargetUpdateType</th>
+                                <th>QueryText</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            DataExtensionName = ''
+            $('#loader').hide();
+            $('#errorbox').hide();
+            $('#successbox').hide();
+
+            $('#filter')
+                .focusout(function () {
+                    buildjBoxData();
+                })
+            $("#btnResetSearch").click(function () {
+                buildjBoxData();
+            })
+            $('#filter').val('')
+            /* Data Extension Initialization */
+            $('#addExternalKey').prop('checked', false)
+            $('#addSubscriberRelationship').prop('checked', false)
+            $('#addDataExtensionList').prop('checked', false)
+            $('#addSchemaDefinition').prop('checked', false)
+            $("#addDataExtensionList").click(function () {
+                if ($('#addDataExtensionList').prop('checked')) {
+                    $('#dataExtensionList').show()
+                    // $('#deList tr:last').after('<tr><td>111111</td><td>My DE</td><td>oijsdf-234234-dfgdfg-234234-sdfsdf</td><td>sdfgsdfgsdfgsdfg</td><td>23-03-23</td></tr>')
+
+                    delist_metadatatable.rows.add([{
+                            "Row": "1",
+                            "MID": "7229333",
+                            "Name": "TESTING SYD invite 110718",
+                            "ExternalKey": "8BE32523-F124-4902-A617-A570E4FB15BC",
+                            "Description": "Description",
+                            "CreatedDate": "2018-07-10T19:47:12.763",
+                            "ModifiedDate": "2018-07-10T19:47:12.763",
+                            "IsSendable": "True",
+                            "IsTestable": "True",
+                            "SendableDataExtensionField": "N\A",
+                            "FullPath": "Data Extensions>TESTING SYD invite 110718",
+                            "FieldList": "Id,FirstName,LastName"
+                        }, {
+                            "Row": "2",
+                            "MID": "7229333",
+                            "Name": "TESTING SYD invite 110718",
+                            "ExternalKey": "8BE33333-F342-4333-A317-A570E4FB15BC",
+                            "Description": "Description",
+                            "CreatedDate": "2018-06-10T19:47:12.763",
+                            "ModifiedDate": "2018-07-10T19:47:12.763",
+                            "IsSendable": "True",
+                            "IsTestable": "True",
+                            "SendableDataExtensionField": "N\A",
+                            "FullPath": "Data Extensions>TESTING SYD invite 110718",
+                            "FieldList": "Id,FirstName,LastName"
+
+                        }])
+                        .draw().clear().draw()
+                } else {
+                    $('#dataExtensionList').hide()
+                }
+            })
+            dedefinition_metadatatable = $('#deDefinition').DataTable({
+                //"scrollCollapse": true,
+                "scrollX": "700px",
+                "scrollCollapse": true,
+                "paging": false,
+                iDisplayLength: -1,
+                "bSort": true,
+                dom: 'Bfrtip',
+                "columnDefs": [{
+                        "targets": [0],
+                        "visible": false
+                    },
+                    {
+                        "targets": [1],
+                        "orderable": false
+                    },
+                    {
+                        "targets": [2],
+                        "orderable": false
+                    },
+                    {
+                        "targets": [3],
+                        "orderable": false
+                    },
+                    {
+                        "targets": [4],
+                        "orderable": false
+                    },
+                    {
+                        "targets": [5],
+                        "orderable": false
+                    },
+                    {
+                        "targets": [6],
+                        "orderable": false
+                    }
+                ],
+                buttons: [{
+                        extend: 'copy',
+                        text: '<i class="fa fa-files-o"></i>',
+                        className: 'btn btn-primary',
+                        titleAttr: 'Copy',
+                        filename: getExportFileName(),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="fa fa-file-excel-o"></i>',
+                        className: 'btn btn-primary',
+                        titleAttr: 'Excel',
+                        filename: getExportFileName(),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        text: '<i class="fa fa-file-text-o"></i>',
+                        className: 'btn btn-primary',
+                        titleAttr: 'CSV',
+                        filename: getExportFileName(),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="fa fa-file-pdf-o"></i>',
+                        className: 'btn btn-primary',
+                        titleAttr: 'PDF',
+                        filename: getExportFileName(),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+
+                        text: 'SQL',
+                        className: 'btn btn-primary',
+                        titleAttr: 'SQL',
+                        filename: getExportFileName(),
+                        action: function (e, dt, node, config) {
+                            alert(
+                                'SQL Copied! This is due to be developed.... Half way through... Sorry!')
+
+                        }
+                    }
+                ]
+            });
+            delist_metadatatable = $('#deList').DataTable({
+                "scrollX": "500px",
+                "scrollCollapse": true,
+                "paging": true,
+                //iDisplayLength: -1,
+                "bSort": true,
+                dom: 'lBfrtip',
+                columns: [{
+                        data: 'Row'
+                    },
+                    {
+                        data: "MID"
+                    },
+                    {
+                        data: "Name"
+                    },
+                    {
+                        data: "ExternalKey"
+                    },
+                    {
+                        data: "Description"
+                    },
+                    {
+                        data: "CreatedDate"
+                    },
+                    {
+                        data: "ModifiedDate"
+                    },
+                    {
+                        data: "IsSendable"
+                    },
+                    {
+                        data: "IsTestable"
+                    },
+                    {
+                        data: "SendableDataExtensionField"
+                    },
+                    {
+                        data: 'FullPath'
+                    },
+                    {
+                        data: "FieldList"
+                    }
+                ],
+                buttons: [{
+                        extend: 'copy',
+                        text: '<i class="fa fa-files-o"></i>',
+                        className: 'btn btn-primary',
+                        titleAttr: 'Copy',
+                        filename: getExportFileName("DataExtension"),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="fa fa-file-excel-o"></i>',
+                        className: 'btn btn-primary',
+                        titleAttr: 'Excel',
+                        filename: getExportFileName("DataExtension"),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        text: '<i class="fa fa-file-text-o"></i>',
+                        className: 'btn btn-primary',
+                        titleAttr: 'CSV',
+                        filename: getExportFileName("DataExtension"),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="fa fa-file-pdf-o"></i>',
+                        className: 'btn btn-primary',
+                        titleAttr: 'PDF',
+                        filename: getExportFileName("DataExtension"),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    }
+                ]
+            })
+            /* Data Extension Initialization */
+
+
+            /* Import Activity Initialization */
+            $('#addImportActivityList').prop('checked', false)
+            $("#addImportActivityList").click(function () {
+                if ($('#addImportActivityList').prop('checked')) {
+                    $('#importActivityList').show()
+                    importlist_metadatatable.rows.add([{
+                            "Row": "1",
+                            "MID": "7229333",
+                            "Name": "TESTING SYD invite 23052019",
+                            "ExternalKey": "8BE32523-F124-4902-A617-A570E4FB15BC",
+                            "Description": "Daily import of all customers",
+                            "Delimiter": ",",
+                            "DestinationObjectID": 0,
+                            "DestinationObjectObjectID": "9d4b5a33-7a4c-e911-a2ce-1402ec8ca03d",
+                            "FieldMappingType": "InferFromColumnHeadings",
+                            "FileSpec": "Hello_World_CM_file_%%Year%%%%Month%%%%Day%%.csv",
+                            "FileType": "CSV",
+                            "DateFormattingLocale": "en-AU",
+                            "HeaderLines": 1,
+                            "MaxFileAge": 0,
+                            "MaxFileAgeScheduleOffset": 0,
+                            "MaxImportFrequency": 0,
+                            "NotificationResponseAddress": "grigory.chopik@amicusdigital.com.au",
+                            "NotificationResponseType": "Email",
+                            "RetrieveFileTransferLocationObjectID": 999,
+                            "UpdateType": "Update"
+                        }, {
+                            "Row": "1",
+                            "MID": "72293234233",
+                            "Name": "TESTING Melbourne invite 23052019",
+                            "ExternalKey": "252E32523-4902-F635-N237-A22DE4FB15BC",
+                            "Description": "Daily import of all customers",
+                            "Delimiter": ",",
+                            "DestinationObjectID": 0,
+                            "DestinationObjectObjectID": "9d4b5a33-7a4c-e911-a2ce-1402ec8ca03d",
+                            "FieldMappingType": "InferFromColumnHeadings",
+                            "FileSpec": "Hello_World_CM_file_%%Year%%%%Month%%%%Day%%.csv",
+                            "FileType": "CSV",
+                            "DateFormattingLocale": "en-AU",
+                            "HeaderLines": 1,
+                            "MaxFileAge": 0,
+                            "MaxFileAgeScheduleOffset": 0,
+                            "MaxImportFrequency": 0,
+                            "NotificationResponseAddress": "grigory.chopik@amicusdigital.com.au",
+                            "NotificationResponseType": "Email",
+                            "RetrieveFileTransferLocationObjectID": 999,
+                            "UpdateType": "Update"
+                        }])
+                        .draw().clear().draw()
+                } else {
+                    $('#importActivityList').hide()
+                }
+            })
+            importlist_metadatatable = $('#importList').DataTable({
+                "scrollX": "500px",
+                "scrollCollapse": true,
+                "paging": true,
+                //iDisplayLength: -1,
+                "bSort": true,
+                dom: 'lBfrtip',
+                columns: [{
+                        data: 'Row'
+                    },
+                    {
+                        data: "MID"
+                    },
+                    {
+                        data: "Name"
+                    },
+                    {
+                        data: "ExternalKey"
+                    },
+                    {
+                        data: "Description"
+                    },
+                    {
+                        data: "Delimiter"
+                    },
+                    {
+                        data: "DestinationObjectID"
+                    },
+                    {
+                        data: "DestinationObjectObjectID"
+                    },
+                    {
+                        data: "FieldMappingType"
+                    },
+                    {
+                        data: "FileSpec"
+                    },
+                    {
+                        data: "FileType"
+                    },
+                    {
+                        data: "DateFormattingLocale"
+                    },
+                    {
+                        data: "HeaderLines"
+                    },
+                    {
+                        data: "MaxFileAge"
+                    },
+                    {
+                        data: "MaxFileAgeScheduleOffset"
+                    },
+                    {
+                        data: "MaxImportFrequency"
+                    },
+                    {
+                        data: "NotificationResponseAddress"
+                    },
+                    {
+                        data: "NotificationResponseType"
+                    },
+                    {
+                        data: "RetrieveFileTransferLocationObjectID"
+                    },
+                    {
+                        data: "UpdateType"
+                    }
+                ],
+                buttons: [{
+                        extend: 'copy',
+                        text: '<i class="fa fa-files-o"></i>',
+                        className: 'btn btn-primary',
+                        titleAttr: 'Copy',
+                        filename: getExportFileName("ImportActivity"),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="fa fa-file-excel-o"></i>',
+                        className: 'btn btn-primary',
+                        titleAttr: 'Excel',
+                        filename: getExportFileName("ImportActivity"),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        text: '<i class="fa fa-file-text-o"></i>',
+                        className: 'btn btn-primary',
+                        titleAttr: 'CSV',
+                        filename: getExportFileName("ImportActivity"),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="fa fa-file-pdf-o"></i>',
+                        className: 'btn btn-primary',
+                        titleAttr: 'PDF',
+                        filename: getExportFileName("ImportActivity"),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    }
+                ]
+            })
+            /* Import Activity Initialization */
+
+            /* SQL Activity Initialization */
+            $('#addSQLActivityList').prop('checked', false)
+            $("#addSQLActivityList").click(function () {
+                if ($('#addSQLActivityList').prop('checked')) {
+                    $('#sqlActivityList').show()
+                    sqllist_metadatatable.rows.add([{
+                            "Row": "1",
+                            "MID": "7229333",
+                            "Name": "TESTING SYD invite 23052019",
+                            "ExternalKey": "8BE32523-F124-4902-A617-A570E4FB15BC",
+                            "Description": " SQL of all customers",
+                            "CreatedDate": "2019-05-23T19:47:12.763",
+                            "ModifiedDate": "2019-05-23T19:47:12.763",
+                            "TargetDEName": "ALL Quote Journey Data",
+                            "TargetDECustomerKey": "F98FEC97-280A-4969-B300-0A4512DE8477",
+                            "TargetUpdateType": "Add",
+                            "QueryText": "SELECT * FROM _Subscribers"
+                        }, {
+                            "Row": "1",
+                            "MID": "72293234233",
+                            "Name": "TESTING Melbourne invite 23052019",
+                            "ExternalKey": "252E32523-4902-F635-N237-A22DE4FB15BC",
+                            "Description": "Daily import of all customers",
+                            "CreatedDate": "2019-05-23T19:47:12.763",
+                            "ModifiedDate": "2019-05-23T19:47:12.763",
+                            "TargetDEName": "ALL Quote Journey Data",
+                            "TargetDECustomerKey": "F98FEC97-280A-4969-B300-0A4512DE8477",
+                            "TargetUpdateType": "Add",
+                            "QueryText": "SELECT * FROM _Subscribers"
+                        }])
+                        .draw().clear().draw()
+                } else {
+                    $('#sqlActivityList').hide()
+                }
+            })
+            sqllist_metadatatable = $('#sqlList').DataTable({
+                "scrollX": "500px",
+                "scrollCollapse": true,
+                "paging": true,
+                //iDisplayLength: -1,
+                "bSort": true,
+                dom: 'lBfrtip',
+                columnDefs: [{
+                    targets: 1,
+                    className: 'noVis'
+                }],
+                buttons: [{
+                    extend: 'colvis',
+                    columns: ':not(.noVis)'
+                }],
+                columns: [{
+                        data: 'Row'
+                    },
+                    {
+                        data: "MID"
+                    },
+                    {
+                        data: "Name"
+                    },
+                    {
+                        data: "ExternalKey"
+                    },
+                    {
+                        data: "Description"
+                    },
+                    {
+                        data: "CreatedDate"
+                    },
+                    {
+                        data: "ModifiedDate"
+                    },
+                    {
+                        data: "TargetDEName"
+                    },
+                    {
+                        data: "TargetDECustomerKey"
+                    },
+                    {
+                        data: "TargetUpdateType"
+                    },
+                    {
+                        data: "QueryText"
+                    }
+                ],
+                buttons: [{
+                        extend: 'copy',
+                        text: '<i class="fa fa-files-o"></i>',
+                        className: 'btn btn-primary',
+                        titleAttr: 'Copy',
+                        filename: getExportFileName("ImportActivity"),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="fa fa-file-excel-o"></i>',
+                        className: 'btn btn-primary',
+                        titleAttr: 'Excel',
+                        filename: getExportFileName("ImportActivity"),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        text: '<i class="fa fa-file-text-o"></i>',
+                        className: 'btn btn-primary',
+                        titleAttr: 'CSV',
+                        filename: getExportFileName("ImportActivity"),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="fa fa-file-pdf-o"></i>',
+                        className: 'btn btn-primary',
+                        titleAttr: 'PDF',
+                        filename: getExportFileName("ImportActivity"),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    }
+                ]
+            })
+            /* SQL Activity Initialization */
+        })
+
+        $(function () {
+            $("#txtContentSwitcher").val('');
+
+            $('#txtContentSwitcher').change(function () {
+                $('#contenttypetxt').text("Account " + $(this).find('option:selected').text() +
+                " Tree");
+                if ($("#txtContentSwitcher").val() == "dataextension") {
+                    //$('#buildDEDefinitionTable').show()
+                    $('#deDetails').show()
+                    if ($('#addDataExtensionList').prop('checked')) $('#dataExtensionList').show()
+                } else {
+                    //$('#buildDEDefinitionTable').hide()
+                    $('#deDetails').hide()
+                    $('#dataExtensionList').hide()
+                    $('#buildDEDefinitionRow').hide()
+                }
+
+                if ($("#txtContentSwitcher").val() == "ELTactivity") {
+                    $('#importDetails').show()
+                    if ($('#addImportActivityList').prop('checked')) $('#importActivityList').show()
+                } else {
+                    $('#importDetails').hide()
+                    $('#importActivityList').hide()
+                }
+
+                if ($("#txtContentSwitcher").val() == "queryactivity") {
+                    $('#sqlDetails').show()
+                    if ($('#addSQLActivityList').prop('checked')) $('#sqlActivityList').show()
+                } else {
+                    $('#sqlDetails').hide()
+                    $('#sqlActivityList').hide()
+                }
+
+            })
+
+            $("#btnBuildTree").click(function () {
+                /** List Tables */
+                delistRows = []
+                delist_metadatatable.clear().draw()
+                importlistRows = []
+                importlist_metadatatable.clear().draw()
+                sqllistRows = []
+                sqllist_metadatatable.clear().draw()
+
+                try {
+                    myModal.destroy();
+                } catch (e) {}
+                var flagValidation = true;
+                /* USERNAME VALIDATION */
+                if (!($("#txtUsername").val())) {
+                    flagValidation = false;
+                    $("#errUsername").show().html('This field is required');
+                    $("#txtUsername").css("border", "1px solid #cc0033");
+                    $("#txtUsername").addClass('errShadow');
+                } else {
+
+                    $("#errUsername").show().html('');
+                    $("#txtUsername").css("border", "1px solid #e5e7ea");
+                    $("#txtUsername").removeClass('errShadow');
+                }
+                /* PASSWORD VALIDATION */
+                if (!($("#txtPassword").val())) {
+                    flagValidation = false;
+                    $("#errPassword").show().html('This field is required');
+                    $("#txtPassword").css("border", "1px solid #cc0033");
+                    $("#txtPassword").addClass('errShadow');
+                } else {
+                    $("#errPassword").show().html('');
+                    $("#txtPassword").css("border", "1px solid #e5e7ea");
+                    $("#txtPassword").removeClass('errShadow');
+                }
+
+                /* CONTENT VALIDATION */
+                if (!($("#txtContentSwitcher").val())) {
+                    flagValidation = false;
+                    $("#errContentSwitcher").show().html('The content value is required');
+                    $("#txtContentSwitcher").css("border", "1px solid #cc0033");
+                    $("#txtContentSwitcher").addClass('errShadow');
+                } else {
+                    $("#errContentSwitcher").show().html('');
+                    $("#txtContentSwitcher").css("border", "1px solid #e5e7ea");
+                    $("#txtContentSwitcher").removeClass('errShadow');
+                }
+                if (flagValidation) {
+                    $("#tree").remove();
+                    var timer_url =
+                        "https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/timer_down2.gif" +
+                        "?a=" + Math.random();
+                    $("#tree_container").append(
+                        '<div id="tree" style="border: 1px dotted gray;"><div id="spinner" class="spinner" style="display:none;"><img id="img-spinner" src="' +
+                        timer_url +
+                        '" style="float: left; margin-right: 1%; margin-bottom: 0.5em; height:30px;width:50px;display: inline;" alt="Loading"/><img id="img-spinner" src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/loading_bar.gif" style="float: left; margin-right: 1%; margin-bottom: 0.5em; height:30px;width:180px;display: inline;float: left;" alt="Loading"/><img id="img-spinner" src="' +
+                        timer_url +
+                        '" style="float: left; margin-right: 1%; margin-bottom: 0.5em; height:30px;width:50px;display: inline;" alt="Loading"/><p style="clear: both;"></div></div>'
+                        );
+
+                    //var seconds = 0;
+                    //var el = document.getElementById('seconds-counter');
+                    //function incrementSeconds() {
+                    //	seconds += 1;
+                    //	el.innerText = "Request time:  " + seconds + " seconds.";
+                    // }
+                    // var cancel = setInterval(incrementSeconds, 1000);
+
+                    ContentType = $("#txtContentSwitcher").val();
+                    $("#tree").fancytree({
+                        extensions: ["filter"],
+                        quicksearch: true,
+                        source: getJSONTree($("#txtContentSwitcher")
+                    .val()), // {url: "http://wwwendt.de/tech/fancytree/demo/ajax-tree-local.json?_=1516312467428"}, 
+
+                        filter: {
+                            autoApply: true, // Re-apply last filter if lazy data is loaded
+                            autoExpand: true, // Expand all branches that contain matches while filtered
+                            counter: true, // Show a badge with number of matching child nodes near parent icons
+                            fuzzy: false, // Match single characters in order, e.g. 'fb' will match 'FooBar'
+                            hideExpandedCounter: true, // Hide counter badge if parent is expanded
+                            hideExpanders: false, // Hide expanders if all child nodes are hidden by filter
+                            highlight: true, // Highlight matches by wrapping inside <mark> tags
+                            leavesOnly: false, // Match end nodes only
+                            nodata: true, // Display a 'no data' status node if result is empty
+                            mode: "dimm" // Grayout unmatched nodes (pass "hide" to remove unmatched node instead)
+                        },
+                        lazyLoad: function (event, data) {
+                            data.result = [];
+                        },
+                        activate: function (event, data) {
+                            $("#statusLine").text("Active node: " + data.node);
+                        },
+                        beforeExpand: function (event, data) {
+
+                        },
+                        dblclick: function (event, data) {
+
+                        },
+                        expand: function (event, data) {
+                            buildjBoxData()
+                        }
+                    });
+                    tree = $("#tree").fancytree("getTree")
+
+                    // Update the Data Extension Full Path
+                    for (der in delistRows) {
+                        try {
+                            delistRows[der].FullPath = getNodePath(delistRows[der].NodeKey)
+                        } catch (err) {
+                            // debugger
+                            // alert(err)
+                        }
+                    }
+                    delist_metadatatable.rows.add(delistRows).draw()
+                    importlist_metadatatable.rows.add(importlistRows).draw()
+                    sqllist_metadatatable.rows.add(sqllistRows).draw()
+                }
+            })
+
+            function getNodePath(nodekey) {
+                var tempnode = tree.getNodeByKey(nodekey)
+                var tempstructure = []
+                tempstructure.push(tree.getNodeByKey(nodekey).data.Name)
+                while (tempnode.getParent().getParent()) {
+                    tempstructure.push(tempnode.getParent().data.Name)
+                    tempnode = tempnode.getParent()
+                }
+                tempstructure.reverse();
+                return tempstructure.join('>')
+            }
+
+            function getJSONTree(ContentType) {
+
+                // *************************** Final Structure *************************************
+                UserName = $("#txtUsername").val()
+                Password = $("#txtPassword").val()
+                var UserPassStr = "UserName=" + UserName + "&Password=" + Password
+                var AllBusinessUnits = true
+                switch (ContentType) {
+                    case "dataextension":
+                        var ContentTypeName = "Data Extensions";
+                        var ContentType = "dataextension"
+                        var ContentTypeArray =
+                            "shared_dataextension,shared_data,dataextension,salesforcedataextension,shared_salesforcedataextension,synchronizeddataextension"
+                        break
+                    case "filterdefinition":
+                        var ContentTypeName = "Filter Definition"
+                        var ContentType = "filterdefinition"
+                        var ContentTypeArray = "filterdefinition"
+                        break
+                    case "ELTactivity":
+                        var ContentTypeName = "Import Activity"
+                        var ContentType = "ELTactivity"
+                        var ContentTypeArray = "ELTactivity"
+                        break
+                    case "list":
+                        var ContentTypeName = "My Lists"
+                        var ContentType = "list"
+                        var ContentTypeArray =
+                            "list,publication,shared_publication,suppression_list,shared_suppression_list,group,mysubs,shared_data"
+                        break
+                    case "queryactivity":
+                        var ContentTypeName = "Query Activity"
+                        var ContentType = "queryactivity"
+                        var ContentTypeArray =
+                            "queryactivity,queryactivity" // If only one content available please specify it twice it's required for SOAP to make IN selection
+                        break
+                    case "content":
+                        var ContentTypeName = "Content"
+                        var ContentType = "content"
+                        var ContentTypeArray =
+                            "media,content,template,automated_email,email,shared_email,livecontent,microsite,micrositelayout,triggered_send,triggered_send_journeybuilder,userinitiatedsends,shared_email,shared_item shared_portfolio,shared_survey,shared_template,shared_content,asset,ABTest";
+                        break
+                    case "automations":
+                        var ContentTypeName = "Automations"
+                        var ContentType = "automations"
+                        var ContentTypeArray = "automations, programs2"
+                        break
+                }
+                var AccountStructure_Response = $.ajax({
+                    type: "GET",
+                    url: "https://pages.s7.exacttarget.com/soap_post_account_structure?",
+                    data: {
+                        "UserName": UserName,
+                        "Password": Password
+                    },
+                    cache: false,
+                    async: false,
+                    beforeSend: function () {
+                        $("#spinner").show();
+                        return true
+                    },
+                    complete: function () {
+                        $("#spinner").hide();
+                    }
+                })
+                var AccountStructureXML = JSON.parse(AccountStructure_Response.responseText).Response
+
+                var AccountStructure = xml2json.fromStr(AccountStructureXML, 'string');
+
+                // Print DE JSON Object
+                var rawResp = JSON.parse(AccountStructure);
+                var reqObj = rawResp["soap:Envelope"]["soap:Body"]["RetrieveResponseMsg"]["Results"];
+                var sfmcContentStructure = [{
+                    key: "MID_0",
+                    title: "Account " + ContentTypeName + " Structure",
+                    icon: "main-account", //"img/oscar.jpg",
+                    Parent: "",
+                    Name: "",
+                    folder: true,
+                    children: []
+                }];
+
+                // Check whether it's a single o multi business-unit Account
+                try {
+                    var checkAccountType = reqObj["AccountType"]["#text"]
+                    var multiBU = false
+                } catch (e) {
+                    var multiBU = true
+                }
+
+                var BusinessUnitList = {}
+                if (multiBU) {
+                    for (i in reqObj) { //  Multi BU Account Structure
+                        if (i === "insertChildAtId") continue
+                        var tooltiptxt = "<i>AccountType: " + reqObj[i]["AccountType"]["#text"] + "</i><br>" +
+                            "<i>Email:       " + reqObj[i]["Email"]["#text"] + "</i><br>" +
+                            "<i>FromName:    " + reqObj[i]["FromName"]["#text"] + "</i><br>" +
+                            "<i>BusinessName:" + reqObj[i]["BusinessName"]["#text"] + "</i><br>" +
+                            "<i>Phone:       " + reqObj[i]["Phone"]["#text"] + "</i><br>" +
+                            "<i>Address:     " + reqObj[i]["Address"]["#text"] + "</i><br>" +
+                            "<i>Country:     " + reqObj[i]["Country"]["#text"] + "</i><br>" +
+                            "<i>CustomerID:  " + reqObj[i]["CustomerID"]["#text"] + "</i><br>" +
+                            "<i>ID:          " + reqObj[i]["ID"]["#text"] + "</i><br>"
+
+                        var elementDetails = {
+                            key: "",
+                            title: "",
+                            Parent: "",
+                            folder: true,
+                            tooltip: reqObj[i]["Name"]["#text"],
+                            icon: "business-unit",
+                            children: []
+                        } //icon:"img/marketingcloud.png", children : []}
+                        elementDetails.key = "MID_" + reqObj[i]["ID"]["#text"];
+                        //	elementDetails.title  = "<b  style='background-color:#eff9fe;'>MID: "+ reqObj[i]["ID"]["#text"] + "</b><em  style='background-color:#eff9fe;'> " + reqObj[i]["Name"]["#text"] + " </em>";
+                        elementDetails.title = '<span class="my-title" title="' + tooltiptxt + '">' +
+                            "<b  style='background-color:#eff9fe;'><em>MID: " + reqObj[i]["ID"]["#text"] +
+                            "</em></b> " + reqObj[i]["Name"]["#text"] + "</span>  "
+                        elementDetails.Name = "MID: " + reqObj[i]["ID"]["#text"] + " " + reqObj[i]["Name"][
+                            "#text"
+                        ]
+                        var ParMID = reqObj[i]["ParentID"]["#text"];
+                        if (!(ParMID == "0")) {
+                            elementDetails.Parent = "MID_" + reqObj[i]["ParentID"]["#text"];
+                        } else {
+                            elementDetails.Parent = "MID_0"
+                        }
+
+                        sfmcContentStructure.push(elementDetails);
+                        BusinessUnitList[reqObj[i]["ID"]["#text"]] = reqObj[i]["Name"]["#text"]
+                    } //  Multi BU Account Structure
+                } else {
+                    //  Single BU Account Structure
+
+
+
+                    var tooltiptxt = "<i>AccountType: " + reqObj["AccountType"]["#text"] + "</i><br>" +
+                        "<i>Email:       " + reqObj["Email"]["#text"] + "</i><br>" +
+                        "<i>FromName:    " + reqObj["FromName"]["#text"] + "</i><br>" +
+                        "<i>BusinessName:" + reqObj["BusinessName"]["#text"] + "</i><br>" +
+                        "<i>Phone:       " + reqObj["Phone"]["#text"] + "</i><br>" +
+                        "<i>Address:     " + reqObj["Address"]["#text"] + "</i><br>" +
+                        "<i>Country:     " + reqObj["Country"]["#text"] + "</i><br>" +
+                        "<i>CustomerID:  " + reqObj["CustomerID"]["#text"] + "</i><br>" +
+                        "<i>ID:          " + reqObj["ID"]["#text"] + "</i><br>"
+                    var elementDetails = {
+                        key: "",
+                        title: "",
+                        Parent: "",
+                        folder: true,
+                        tooltip: reqObj["Name"]["#text"],
+                        icon: "business-unit",
+                        children: []
+                    } //icon:"img/marketingcloud.png", children : []}
+                    elementDetails.key = "MID_" + reqObj["ID"]["#text"];
+                    //	elementDetails.title  = "<b  style='background-color:#eff9fe;'>MID: "+ reqObj["ID"]["#text"] + "</b><em  style='background-color:#eff9fe;'> " + reqObj["Name"]["#text"] + " </em>";
+                    elementDetails.title = '<span class="my-title" title="' + tooltiptxt + '">' +
+                        "<b  style='background-color:#eff9fe;'><em>MID: " + reqObj["ID"]["#text"] +
+                        "</em></b> " + reqObj["Name"]["#text"] + "</span> "
+                    elementDetails.Name = "MID: " + reqObj["ID"]["#text"] + " " + reqObj["Name"]["#text"]
+                    var ParMID = reqObj["ParentID"]["#text"];
+                    if (!(ParMID == "0")) {
+                        elementDetails.Parent = "MID_" + reqObj["ParentID"]["#text"]
+                    } else {
+                        elementDetails.Parent = "MID_0"
+                    }
+                    sfmcContentStructure.push(elementDetails)
+                    //  Single BU Account Structure Account Structure					
+                }
+                // *** ALL BUSINESS UNITS ***************************  Folders Structure and Content
+                if (AllBusinessUnits) {
+                    // ********************************** Folders Structure
+                    var DE_Folders_Response = $.ajax({
+                        type: "GET",
+                        url: "https://pages.s7.exacttarget.com/soap_post_get_folder_structure?ContentType=" +
+                            ContentTypeArray,
+                        data: {
+                            "UserName": UserName,
+                            "Password": Password
+                        },
+                        cache: false,
+                        async: false,
+                        beforeSend: function () {
+                            $("#spinner").show();
+                            return true
+                        },
+                        complete: function () {
+                            $("#spinner").hide();
+                        }
+                    })
+
+                    var DE_FoldersXML = JSON.parse(DE_Folders_Response.responseText).Response
+                    var DE_Folders = xml2json.fromStr(DE_FoldersXML, 'string');
+                    var rawResp = JSON.parse(DE_Folders);
+                    var reqFolderObj = rawResp["soap:Envelope"]["soap:Body"]["RetrieveResponseMsg"]["Results"]
+                    if (ContentType != "ELTactivity") {
+                        for (f in reqFolderObj) {
+                            if (f === "insertChildAtId") continue
+                            var elementDetails = {
+                                key: "",
+                                title: "",
+                                Parent: "",
+                                folder: true,
+                                tooltip: "",
+                                children: []
+                            }
+
+
+
+                            var curMID = reqFolderObj[f]["Client"]["ID"]["#text"];
+
+                            try {
+
+                                elementDetails.tooltip = "ID:" + reqFolderObj[f]["ID"]["#text"] + "<br>"
+                                elementDetails.key = curMID + "_" + reqFolderObj[f]["ID"]["#text"];
+                                if (ContentType === "list") {
+                                    elementDetails.title = capitalizeFirstLetter(reqFolderObj[f]["Name"][
+                                        "#text"]);
+                                    elementDetails.Name = capitalizeFirstLetter(reqFolderObj[f]["Name"][
+                                        "#text"]);
+                                } else {
+                                    elementDetails.title = reqFolderObj[f]["Name"]["#text"]
+                                    elementDetails.Name = reqFolderObj[f]["Name"]["#text"]
+                                }
+                                var ParFolderName = JSON.stringify(reqFolderObj[f]["ParentFolder"]["ID"]);
+                                if (!(ParFolderName == '{"#text":"0"}')) {
+                                    elementDetails.Parent = curMID + "_" + reqFolderObj[f]["ParentFolder"]["ID"]
+                                        ["#text"];
+                                } else {
+                                    elementDetails.Parent = "MID_" + curMID;
+                                }
+                                sfmcContentStructure.push(elementDetails);
+                            } catch (err) {
+
+                                elementDetails.tooltip = "ID:" + reqFolderObj["ID"]["#text"] + "<br>"
+                                elementDetails.key = curMID + "_" + reqFolderObj["ID"]["#text"];
+                                if (ContentType === "list") {
+                                    elementDetails.title = capitalizeFirstLetter(reqFolderObj["Name"]["#text"])
+                                    elementDetails.Name = capitalizeFirstLetter(reqFolderObj["Name"]["#text"])
+                                } else {
+                                    elementDetails.title = reqFolderObj["Name"]["#text"]
+                                    elementDetails.Name = reqFolderObj["Name"]["#text"]
+                                }
+                                var ParFolderName = JSON.stringify(reqFolderObj["ParentFolder"]["ID"]);
+                                if (!(ParFolderName == '{"#text":"0"}')) {
+                                    elementDetails.Parent = curMID + "_" + reqFolderObj["ParentFolder"]["ID"][
+                                        "#text"
+                                    ];
+                                } else {
+                                    elementDetails.Parent = "MID_" + curMID;
+                                }
+                                sfmcContentStructure.push(elementDetails);
+                                break
+                            }
+                        }
+                    } else {
+                        switch (ContentType) {
+                            case "ELTactivity": // IMPORT ACTIVITY
+                                var Icon = "file-import-activity"
+                                var Title = "<span style='color: #005fb2;'>IMPORT FILE</span>"
+                                var Tooltip = "IMPORT ACTIVITY"
+                                var Key = "_IMPORT_ACTIVITY_0"
+                                var CreateDeletedFolder = true
+                                break
+                        }
+                        for (mid in BusinessUnitList) {
+
+                            var elementDetails = {
+                                key: "",
+                                title: "",
+                                Parent: "",
+                                folder: true,
+                                tooltip: "",
+                                icon: Icon,
+                                children: []
+                            }
+                            var curMID = mid
+                            var curMIDName = BusinessUnitList[mid]
+                            elementDetails.tooltip = "MID_" + curMID + Tooltip
+                            elementDetails.key = curMID + Key
+                            elementDetails.Parent = "MID_" + curMID
+                            elementDetails.title = Title
+                            elementDetails.Name = curMID + " " + curMIDName
+                            sfmcContentStructure.push(elementDetails)
+                            if (CreateDeletedFolder) {
+                                var elementDetails = {
+                                    key: "",
+                                    title: "",
+                                    Parent: "",
+                                    folder: true,
+                                    tooltip: "",
+                                    children: []
+                                }
+                                elementDetails.tooltip = "MID_" + curMID + Tooltip
+                                elementDetails.key = curMID + Key + "_DeletedElements"
+                                elementDetails.Parent = curMID + Key
+                                elementDetails.title = "<span>Deleted Elements</span>"
+                                sfmcContentStructure.push(elementDetails)
+                            }
+                        }
+                    }
+                    // ********************************** Folders Structure
+                    // ********************************** Folders Content
+
+                    var ListID = []; // Is used to get SubscriberCounts for the specific list
+                    var ContentURL = "";
+                    var ContinueRequestURL = "https://pages.s7.exacttarget.com/soap_post_continue_request"
+                    switch (ContentType) {
+                        case "dataextension": // DATA EXTENSIONS
+                            ContentURL = "https://pages.s7.exacttarget.com/soap_post_data_extensions"
+                            break
+                        case "filterdefinition": // FILTER DEFINITION
+                            ContentURL = "https://pages.s7.exacttarget.com/soap_post_filter_definition"
+                            break
+                        case "ELTactivity": // IMPORT ACTIVITY
+                            ContentURL = "https://pages.s7.exacttarget.com/soap_post_import_activity/"
+                            break
+                        case "list": // MY LISTS
+                            ContentURL = "https://pages.s7.exacttarget.com/soap_post_lists/"
+                            break
+                        case "queryactivity": // QUERY ACTIVITIES
+                            ContentURL = "https://pages.s7.exacttarget.com/soap_post_query_activities"
+                            break
+                        case "content": // CONTENT
+                            ContentType = content
+                            ContentURL = "https://pages.s7.exacttarget.com/soap_post_data_extensions"
+                            break
+                        case "automations": // AUTOMATIONS
+                            ContentURL = "https://pages.s7.exacttarget.com/soap_post_automations/"
+                            break
+                    }
+
+
+                    var MoreDataAvailabe = false
+                    var GetMoreData = true
+                    var RequestID = ""
+                    while (GetMoreData) {
+                        GetMoreData = false
+                        if (!MoreDataAvailabe) {
+                            var contentURL = ContentURL
+                        } else {
+                            MoreDataAvailabe = false;
+                            var contentURL = ContinueRequestURL + "?" + "ContinueRequest_ID=" + RequestID
+                        }
+                        var FolderContent_Response = $.ajax({
+                            type: "GET",
+                            url: contentURL,
+                            data: {
+                                "UserName": UserName,
+                                "Password": Password
+                            },
+                            cache: false,
+                            async: false,
+                            beforeSend: function () {
+                                $("#spinner").show();
+                                return true
+                            },
+                            complete: function () {
+                                $("#spinner").hide();
+                            }
+                        })
+                        try {
+                            var FolderContentXML = JSON.parse(FolderContent_Response.responseText).Response[0]
+
+                            //alert("first:" + FolderContentXML)
+                            //FolderContentXML = FolderContentXML.replace(new RegExp('<QueryText>','g') ,'<QueryText><![CDATA[')
+                            //FolderContentXML = FolderContentXML.replace(new RegExp('</QueryText>','g'),']]></QueryText>')
+                            //alert("second:" + FolderContentXML)
+
+                            var FolderContent = xml2json.fromStr(FolderContentXML, 'string')
+                            var rawResp = JSON.parse(FolderContent);
+                            var OverallStatus = rawResp["soap:Envelope"]["soap:Body"]["RetrieveResponseMsg"][
+                                "OverallStatus"
+                            ]["#text"];
+                            var RequestID = rawResp["soap:Envelope"]["soap:Body"]["RetrieveResponseMsg"][
+                                "RequestID"
+                            ]["#text"];
+                            if (OverallStatus === "OK" || OverallStatus === "MoreDataAvailable") {
+                                var reqFolderContentObj = rawResp["soap:Envelope"]["soap:Body"][
+                                    "RetrieveResponseMsg"
+                                ]["Results"]
+
+                                for (c in reqFolderContentObj) {
+                                    if (c === "insertChildAtId") continue
+                                    try {
+                                        var curMID = reqFolderContentObj[c]["Client"]["ID"]["#text"]
+                                    } catch {
+                                        var curMID = reqFolderContentObj[c]["Client"]["ClientID"]["#text"]
+                                    }
+                                    var curMIDName = BusinessUnitList[curMID]
+                                    switch (ContentType) {
+                                        case "dataextension": // DATA EXTENSIONS
+                                            try {
+                                                //debugger
+                                                try {
+                                                    // This node exists only for sendable Data Extensions
+                                                    var SendableDataExtensionField = reqFolderContentObj[c][
+                                                        "SendableDataExtensionField"
+                                                    ]["Name"]["#text"]
+                                                } catch (e) {
+                                                    var SendableDataExtensionField = 'N&#47;A'
+                                                }
+
+                                                var tooltiptxt = "<i>CategoryID:  " + reqFolderContentObj[c][
+                                                        "CategoryID"
+                                                    ]["#text"] + "</i><br>" +
+                                                    "<i>CreatedDate: " + reqFolderContentObj[c]["CreatedDate"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>ModifiedDate:" + reqFolderContentObj[c]["ModifiedDate"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>CustomerKey: " + reqFolderContentObj[c]["CustomerKey"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>Description :" + reqFolderContentObj[c]["Description"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>IsSendable:  " + reqFolderContentObj[c]["IsSendable"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>IsTestable:  " + reqFolderContentObj[c]["IsTestable"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>Subscriber Relationship Field:  " +
+                                                    SendableDataExtensionField + "</i><br>"
+                                                var elementDetails = {
+                                                    key: "",
+                                                    title: "",
+                                                    Parent: "",
+                                                    folder: false,
+                                                    tooltip: reqFolderContentObj[c]["Name"]["#text"],
+                                                    icon: "https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/dataextension.png",
+                                                    children: []
+                                                }
+                                                elementDetails.key = curMID + "_" + reqFolderContentObj[c][
+                                                    "CustomerKey"
+                                                ]["#text"]
+                                                var deDefintionButton =
+                                                    "<button class='btn btn-xs btn-primary' tabindex='0' aria-controls='deDefinition' onclick='buildDEDefinition(\"" +
+                                                    reqFolderContentObj[c]["CustomerKey"]["#text"] + '","' +
+                                                    reqFolderContentObj[c]["Name"]["#text"] + '","' + curMID +
+                                                    '","' + curMIDName +
+                                                    "\")' title='DE Defintion'><span><i class='fa fa-cog'></i></span></button> "
+                                                var deRecordsButton =
+                                                    "<button class='btn btn-xs btn-primary' tabindex='0' aria-controls='deDefinition' onclick='buildDERecords(\"" +
+                                                    reqFolderContentObj[c]["CustomerKey"]["#text"] + '","' +
+                                                    reqFolderContentObj[c]["Name"]["#text"] + '","' + curMID +
+                                                    '","' + curMIDName +
+                                                    "\")' title='DE Records Lookup'><span><i class='fa fa-table'></i></span></button>"
+                                                if ($("#addExternalKey").is(":checked") && $(
+                                                        "#addSubscriberRelationship").is(":checked")) {
+                                                    elementDetails.title = '<span class="my-title" title="' +
+                                                        tooltiptxt + '">' + reqFolderContentObj[c]["Name"][
+                                                            "#text"
+                                                        ] + " <small>( EK: " + reqFolderContentObj[c][
+                                                            "CustomerKey"
+                                                        ]["#text"] + " SR: " + SendableDataExtensionField +
+                                                        "</small>)</span>  " + deDefintionButton +
+                                                        deRecordsButton
+                                                } else if ($("#addExternalKey").is(":checked")) {
+                                                    elementDetails.title = '<span class="my-title" title="' +
+                                                        tooltiptxt + '">' + reqFolderContentObj[c]["Name"][
+                                                            "#text"
+                                                        ] + " <small>(" + reqFolderContentObj[c]["CustomerKey"][
+                                                            "#text"
+                                                        ] + "</small>)</span>  " + deDefintionButton +
+                                                        deRecordsButton
+                                                } else if ($("#addSubscriberRelationship").is(":checked") &&
+                                                    reqFolderContentObj[c]["IsSendable"]["#text"] == "true") {
+                                                    elementDetails.title = '<span class="my-title" title="' +
+                                                        tooltiptxt + '">' + reqFolderContentObj[c]["Name"][
+                                                            "#text"
+                                                        ] + " <small>(" + SendableDataExtensionField +
+                                                        "</small>)</span>  " + deDefintionButton +
+                                                        deRecordsButton
+                                                } else {
+                                                    elementDetails.title = '<span class="my-title" title="' +
+                                                        tooltiptxt + '">' + reqFolderContentObj[c]["Name"][
+                                                            "#text"
+                                                        ] + " <small></span>  " + deDefintionButton +
+                                                        deRecordsButton
+                                                }
+                                                elementDetails.Name = reqFolderContentObj[c]["Name"]["#text"]
+                                                elementDetails.Parent = curMID + "_" + reqFolderContentObj[c][
+                                                    "CategoryID"
+                                                ]["#text"]
+                                                sfmcContentStructure.push(elementDetails)
+
+                                                // Update Data Extension List Table 
+                                                if ($('#addDataExtensionList').prop('checked')) {
+                                                    var rowCount = delistRows.length
+                                                    // $('#deList tr:last').after('<tr><td>' + rowCount + '</td><td>' + curMID + ' </td><td>' + reqFolderContentObj[c]["Name"]["#text"] + '</td><td>' + reqFolderContentObj[c]["CustomerKey"]["#text"] + '</td><td>' + reqFolderContentObj[c]["CreatedDate"]["#text"] + '</td></tr>')
+                                                    delistRows.push({
+                                                        "Row": delistRows.length,
+                                                        "MID": curMID,
+                                                        "Name": reqFolderContentObj[c]["Name"]["#text"],
+                                                        "ExternalKey": reqFolderContentObj[c][
+                                                            "CustomerKey"
+                                                        ]["#text"],
+                                                        "Description": String((
+                                                            typeof reqFolderContentObj[c][
+                                                                "Description"
+                                                            ]["#text"] === "undefined" ? "" :
+                                                            reqFolderContentObj[c][
+                                                                "Description"]["#text"])),
+                                                        "CreatedDate": reqFolderContentObj[c][
+                                                            "CreatedDate"
+                                                        ]["#text"],
+                                                        "ModifiedDate": reqFolderContentObj[c][
+                                                            "ModifiedDate"
+                                                        ]["#text"],
+                                                        "IsSendable": reqFolderContentObj[c][
+                                                            "IsSendable"
+                                                        ]["#text"],
+                                                        "IsTestable": reqFolderContentObj[c][
+                                                            "IsTestable"
+                                                        ]["#text"],
+                                                        "SendableDataExtensionField": SendableDataExtensionField,
+                                                        "NodeKey": elementDetails.key,
+                                                        "FullPath": "",
+                                                        "FieldList": ""
+                                                    })
+                                                }
+                                            } catch (err) {
+                                                alert(err);
+                                            }
+                                            break
+                                        case "filterdefinition": // FILTER DEFINITION
+                                            try {
+
+                                                if (JSON.stringify(reqFolderContentObj[c]["DataSource"][
+                                                        "ObjectID"
+                                                    ]["#text"]) === 'undefined') {
+                                                    var ObjectID = reqFolderContentObj[c]["DataSource"][
+                                                        "ObjectID"
+                                                    ]["#text"]
+                                                    var CustomerKey = reqFolderContentObj[c]["DataSource"][
+                                                        "CustomerKey"
+                                                    ]["#text"]
+                                                    var CreatedDate = reqFolderContentObj[c]["DataSource"][
+                                                        "CreatedDate"
+                                                    ]["#text"]
+                                                } else {
+                                                    var ObjectID = "undefined"
+                                                    var CustomerKey = "undefined"
+                                                    var CreatedDate = "undefined"
+                                                }
+
+
+                                                var tooltiptxt = "<i>CategoryID:  " + reqFolderContentObj[c][
+                                                        "CategoryID"
+                                                    ]["#text"] + "</i><br>" +
+                                                    "<i>CreatedDate: " + reqFolderContentObj[c]["CreatedDate"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>ModifiedDate:" + reqFolderContentObj[c]["ModifiedDate"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>Name: " + reqFolderContentObj[c]["Name"]["#text"] +
+                                                    "</i><br>" +
+                                                    "<i>CustomerKey: " + reqFolderContentObj[c]["CustomerKey"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>Description :" + reqFolderContentObj[c]["Description"][
+                                                        "#text"
+                                                    ] + "</i><br>" + +
+                                                    "<i><b>DataSource:</b></i><br>" +
+                                                    "<i>   ObjectID:  	  " + ObjectID + "</i><br>" +
+                                                    "<i>   CustomerKey:  " + CustomerKey + "</i><br>" +
+                                                    "<i>   CreatedDate:  " + CreatedDate + "</i><br>"
+
+                                                try {
+                                                    var filterDefinitionString = prettyPrintJson.toHtml(
+                                                        reqFolderContentObj[c]["DataFilter"])
+                                                    filterDefinitionString = filterDefinitionString.replace(
+                                                            /\"xsi:type\"/g, '').replace(/\"#text\"/g, '')
+                                                        .replace(/\"@attributes\"/g, '')
+                                                    var filterDefintionButton =
+                                                        "<button class='btn btn-xs btn-primary' tabindex='0' aria-controls='filterDefinition' data-toggle='modal' data-target='#genericModalForm' data-type = 'json' data-title='Data Filter details for " +
+                                                        reqFolderContentObj[c]["Name"]["#text"] +
+                                                        "' data-body='" + filterDefinitionString +
+                                                        "' title='Filter Defintion'><span><i class='fa fa-cog'></i></span></button> "
+                                                } catch (er1) {
+                                                    try {
+                                                        // It is potentially error or API is not working correctly
+                                                        var filterDefinitionString = prettyPrintJson.toHtml(
+                                                            reqFolderContentObj[c]["ObjectState"])
+                                                        filterDefinitionString = filterDefinitionString.replace(
+                                                                /\"xsi:type\"/g, '').replace(/\"#text\"/g, '')
+                                                            .replace(/\"@attributes\"/g, '')
+                                                        var filterDefintionButton =
+                                                            "<button class='btn btn-xs btn-warning' tabindex='0' aria-controls='filterDefinition' data-toggle='modal' data-target='#genericModalForm' data-type = 'json' data-title='Data Filter details for " +
+                                                            reqFolderContentObj[c]["Name"]["#text"] +
+                                                            "' data-body='" + filterDefinitionString +
+                                                            "' title='Filter Defintion'><span><i class='fa fa-cog'></i></span></button> "
+                                                    } catch (er2) {
+                                                        filterDefintionButton = ""
+                                                    }
+
+                                                }
+                                                var elementDetails = {
+                                                    key: "",
+                                                    title: "",
+                                                    Parent: "",
+                                                    folder: false,
+                                                    tooltip: reqFolderContentObj[c]["Name"]["#text"],
+                                                    icon: "https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/datafilter.png",
+                                                    children: []
+                                                }
+                                                elementDetails.key = reqFolderContentObj[c]["CustomerKey"][
+                                                    "#text"
+                                                ]
+                                                elementDetails.title = '<span class="my-title" title="' +
+                                                    tooltiptxt + '">' + reqFolderContentObj[c]["Name"][
+                                                    "#text"] + "</span>  " + filterDefintionButton
+                                                elementDetails.Name = reqFolderContentObj[c]["Name"]["#text"]
+                                                elementDetails.Parent = curMID + "_" + reqFolderContentObj[c][
+                                                    "CategoryID"
+                                                ]["#text"]
+                                                sfmcContentStructure.push(elementDetails);
+                                            } catch (err) {
+                                                alert(err)
+                                            }
+                                            break
+                                        case "ELTactivity": // IMPORT ACTIVITY
+                                            try {
+                                                // Move All Import Activites where Name is a GUID to Deleted Items folder
+                                                var regexGUIDpattern =
+                                                    /(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}/g
+                                                var resultSize = Object.size(reqFolderContentObj[c]["Name"][
+                                                    "#text"
+                                                ].match(regexGUIDpattern))
+
+                                                try {
+                                                    var Notification_Response_Address = reqFolderContentObj[c][
+                                                        "Notification"
+                                                    ]["ResponseAddress"]["#text"]
+                                                    var Notification_Response_Type = reqFolderContentObj[c][
+                                                        "Notification"
+                                                    ]["ResponseType"]["#text"]
+                                                } catch {
+                                                    var Notification_Response_Address = "undefined"
+                                                    var Notification_Response_Type = "undefined"
+                                                }
+
+
+                                                var tooltiptxt = "<i>Name: " + reqFolderContentObj[c]["Name"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>ObjectID: " + reqFolderContentObj[c]["ObjectID"][
+                                                        "#text"] + "</i><br>" +
+                                                    "<i>AllowErrors: " + reqFolderContentObj[c]["AllowErrors"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>CustomerKey: " + reqFolderContentObj[c]["CustomerKey"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>Description :" + reqFolderContentObj[c]["Description"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>Delimiter: " + reqFolderContentObj[c]["Delimiter"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>DestinationObject ID: " + reqFolderContentObj[c][
+                                                        "DestinationObject"
+                                                    ]["ID"]["#text"] + "</i><br>" +
+                                                    "<i>DestinationObject ObjectID: " + reqFolderContentObj[c][
+                                                        "DestinationObject"
+                                                    ]["ObjectID"]["#text"] + "</i><br>" +
+                                                    "<i>FieldMappingType: " + reqFolderContentObj[c][
+                                                        "FieldMappingType"
+                                                    ]["#text"] + "</i><br>" +
+                                                    "<i>FileSpec: " + reqFolderContentObj[c]["FileSpec"][
+                                                        "#text"] + "</i><br>" +
+                                                    "<i>FileType: " + reqFolderContentObj[c]["FileType"][
+                                                        "#text"] + "</i><br>" +
+                                                    "<i>DateFormattingLocale: " + reqFolderContentObj[c][
+                                                        "DateFormattingLocale"
+                                                    ]["LocaleCode"]["#text"] + "</i><br>" +
+                                                    "<i>HeaderLines: " + reqFolderContentObj[c]["HeaderLines"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>MaxFileAge: " + reqFolderContentObj[c]["MaxFileAge"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>MaxFileAgeScheduleOffset: " + reqFolderContentObj[c][
+                                                        "MaxFileAgeScheduleOffset"
+                                                    ]["#text"] + "</i><br>" +
+                                                    "<i>MaxImportFrequency: " + reqFolderContentObj[c][
+                                                        "MaxImportFrequency"
+                                                    ]["#text"] + "</i><br>"
+                                                "<i>Notification Response Address: " +
+                                                Notification_Response_Address + "</i><br>" +
+                                                    "<i>Notification Response Type: " +
+                                                    Notification_Response_Type + "</i><br>" +
+                                                    "<i>RetrieveFileTransferLocation ObjectID: " +
+                                                    reqFolderContentObj[c]["RetrieveFileTransferLocation"][
+                                                        "ObjectID"
+                                                    ]["#text"] + "</i><br>" +
+                                                    "<i>StandardQuotedStrings: " + reqFolderContentObj[c][
+                                                        "StandardQuotedStrings"
+                                                    ]["#text"] + "</i><br>" +
+                                                    "<i>UpdateType: " + reqFolderContentObj[c]["UpdateType"][
+                                                        "#text"
+                                                    ] + "</i><br>"
+
+                                                //var importActivityButton 	= 	"<button class='btn btn-xs btn-primary' tabindex='0' aria-controls='filterDefinition' data-toggle='modal' data-target='#genericModalForm' data-type = 'json' data-title='Data Filter details for "+ reqFolderContentObj[c]["Name"]["#text"] +"' data-body='"+ filterDefinitionString +"' title='Filter Defintion'><span><i class='fa fa-cog'></i></span></button> "														
+                                                var importActivityButton = ""
+                                                var elementDetails = {
+                                                    key: "",
+                                                    title: "",
+                                                    Parent: "",
+                                                    folder: false,
+                                                    tooltip: reqFolderContentObj[c]["Name"]["#text"],
+                                                    icon: "https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/importactivity.png",
+                                                    children: []
+                                                }
+                                                elementDetails.key = reqFolderContentObj[c]["CustomerKey"][
+                                                    "#text"
+                                                ]
+                                                elementDetails.title = '<span class="my-title" title="' +
+                                                    tooltiptxt + '">' + reqFolderContentObj[c]["Name"][
+                                                    "#text"] + "</span>  " + importActivityButton
+                                                elementDetails.Name = reqFolderContentObj[c]["Name"]["#text"]
+                                                if (resultSize == 0) {
+                                                    elementDetails.Parent = curMID + "_IMPORT_ACTIVITY_0"
+                                                } else {
+                                                    elementDetails.Parent = curMID + "_IMPORT_ACTIVITY_0" +
+                                                        "_DeletedElements"
+                                                }
+                                                sfmcContentStructure.push(elementDetails)
+
+                                                if ($('#addImportActivityList').prop('checked')) {
+                                                    var rowCount = importlistRows.length
+                                                    // $('#importlistRows tr:last').after('<tr><td>' + rowCount + '</td><td>' + curMID + ' </td><td>' + reqFolderContentObj[c]["Name"]["#text"] + '</td><td>' + reqFolderContentObj[c]["CustomerKey"]["#text"] + '</td><td>' + reqFolderContentObj[c]["CreatedDate"]["#text"] + '</td></tr>')
+                                                    importlistRows.push({
+                                                        "Row": importlistRows.length,
+                                                        "MID": curMID,
+                                                        "Name": reqFolderContentObj[c]["Name"]["#text"],
+                                                        "ExternalKey": reqFolderContentObj[c][
+                                                            "CustomerKey"
+                                                        ]["#text"],
+                                                        "Description": String(reqFolderContentObj[c][
+                                                            "Description"
+                                                        ]["#text"]),
+                                                        "Delimiter": String(reqFolderContentObj[c][
+                                                            "Delimiter"
+                                                        ]["#text"]),
+                                                        "DestinationObjectID": reqFolderContentObj[c][
+                                                            "DestinationObject"
+                                                        ]["ID"]["#text"],
+                                                        "DestinationObjectObjectID": reqFolderContentObj[
+                                                            c]["DestinationObject"]["ObjectID"][
+                                                            "#text"
+                                                        ],
+                                                        "FieldMappingType": reqFolderContentObj[c][
+                                                            "FieldMappingType"
+                                                        ]["#text"],
+                                                        "FileSpec": reqFolderContentObj[c]["FileSpec"][
+                                                            "#text"
+                                                        ],
+                                                        "FileType": reqFolderContentObj[c]["FileType"][
+                                                            "#text"
+                                                        ],
+                                                        "DateFormattingLocale": reqFolderContentObj[c][
+                                                            "DateFormattingLocale"
+                                                        ]["LocaleCode"]["#text"],
+                                                        "HeaderLines": reqFolderContentObj[c][
+                                                            "HeaderLines"
+                                                        ]["#text"],
+                                                        "MaxFileAge": reqFolderContentObj[c][
+                                                            "MaxFileAge"
+                                                        ]["#text"],
+                                                        "MaxFileAgeScheduleOffset": reqFolderContentObj[
+                                                            c]["MaxFileAgeScheduleOffset"]["#text"],
+                                                        "MaxImportFrequency": reqFolderContentObj[c][
+                                                            "MaxImportFrequency"
+                                                        ]["#text"],
+                                                        "NotificationResponseAddress": Notification_Response_Address,
+                                                        "NotificationResponseType": Notification_Response_Type,
+                                                        "RetrieveFileTransferLocationObjectID": reqFolderContentObj[
+                                                            c]["RetrieveFileTransferLocation"][
+                                                            "ObjectID"
+                                                        ]["#text"],
+                                                        "UpdateType": reqFolderContentObj[c][
+                                                            "UpdateType"
+                                                        ]["#text"]
+                                                    })
+                                                }
+
+                                            } catch (err) {
+                                                alert(err)
+                                            }
+                                            break
+                                        case "list": // MY LISTS
+                                            try {
+                                                var tooltiptxt = "<i>CategoryID:        " + reqFolderContentObj[
+                                                        c]["Category"]["#text"] + "</i><br>" +
+                                                    "<i>ID:                " + reqFolderContentObj[c]["ID"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>Description:       " + reqFolderContentObj[c][
+                                                        "Description"
+                                                    ]["#text"] + "</i><br>" +
+                                                    "<i>ListClassification:" + reqFolderContentObj[c][
+                                                        "ListClassification"
+                                                    ]["#text"] + "</i><br>" +
+                                                    "<i>CreatedDate:       " + reqFolderContentObj[c][
+                                                        "CreatedDate"
+                                                    ]["#text"] + "</i><br>" +
+                                                    "<i>ModifiedDate:      " + reqFolderContentObj[c][
+                                                        "ModifiedDate"
+                                                    ]["#text"] + "</i><br>" +
+                                                    "<i>CustomerKey:       " + reqFolderContentObj[c][
+                                                        "CustomerKey"
+                                                    ]["#text"] + "</i><br>"
+                                                var elementDetails = {
+                                                    key: "",
+                                                    title: "",
+                                                    Parent: "",
+                                                    folder: false,
+                                                    tooltip: reqFolderContentObj[c]["ListName"]["#text"],
+                                                    children: []
+                                                }
+                                                elementDetails.key = reqFolderContentObj[c]["CustomerKey"][
+                                                    "#text"
+                                                ]
+                                                elementDetails.title = '<span class="my-title" title="' +
+                                                    tooltiptxt + '">' + reqFolderContentObj[c]["ListName"][
+                                                        "#text"
+                                                    ] + " <small>(ID:<b>" + reqFolderContentObj[c]["ID"][
+                                                        "#text"] + "</b>)</small> <small>Count:" +
+                                                    " <b>PlaceHolderCount" + reqFolderContentObj[c]["ID"][
+                                                        "#text"
+                                                    ] + "</b></small></span>"
+                                                elementDetails.Name = reqFolderContentObj[c]["ListName"][
+                                                    "#text"]
+                                                elementDetails.Parent = curMID + "_" + reqFolderContentObj[c][
+                                                    "Category"
+                                                ]["#text"]
+                                                //alert(JSON.stringify(elementDetails))
+                                                sfmcContentStructure.push(elementDetails)
+                                                ListID.push(reqFolderContentObj[c]["ID"]["#text"])
+                                            } catch (err) {
+                                                //alert(reqFolderContentObj[c]["ListName"]["#text"]);
+                                            }
+                                            break
+                                        case "queryactivity": // QUERY ACTIVITIES
+                                            try {
+                                                debugger
+                                                var tooltiptxt = "<i>CategoryID:        " + reqFolderContentObj[
+                                                        c]["CategoryID"]["#text"] + "</i><br>" +
+                                                    "<i>CreatedDate:       " + reqFolderContentObj[c][
+                                                        "CreatedDate"
+                                                    ]["#text"] + "</i><br>" +
+                                                    "<i>ModifiedDate:      " + reqFolderContentObj[c][
+                                                        "ModifiedDate"
+                                                    ]["#text"] + "</i><br>" +
+                                                    "<i>CustomerKey:       " + reqFolderContentObj[c][
+                                                        "CustomerKey"
+                                                    ]["#text"] + "</i><br>" +
+                                                    "<i>Description:       " + reqFolderContentObj[c][
+                                                        "Description"
+                                                    ]["#text"] + "</i><br>" +
+                                                    "<i>TargetDEName:      " + reqFolderContentObj[c][
+                                                        "DataExtensionTarget"
+                                                    ]["Name"]["#text"] + "</i><br>" +
+                                                    "<i>TargetDECustomerKey: " + reqFolderContentObj[c][
+                                                        "DataExtensionTarget"
+                                                    ]["CustomerKey"]["#text"] + "</i><br>" +
+                                                    "<i>TargetUpdateType:  " + reqFolderContentObj[c][
+                                                        "TargetUpdateType"
+                                                    ]["#text"] + "</i><br>" +
+                                                    "<i>QueryText:         " + "<pre class='prettyprint'>" +
+                                                    reqFolderContentObj[c]["QueryText"]["#text"] +
+                                                    "</pre></i><br>"
+                                                //alert(JSON.stringify(reqFolderContentObj[c]))				 
+                                                var elementDetails = {
+                                                    key: "",
+                                                    title: "",
+                                                    Parent: "",
+                                                    folder: false,
+                                                    tooltip: reqFolderContentObj[c]["Name"]["#text"],
+                                                    icon: "https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/sqlactivity.png",
+                                                    children: []
+                                                }
+                                                elementDetails.key = reqFolderContentObj[c]["CustomerKey"][
+                                                    "#text"
+                                                ];
+                                                elementDetails.title = '<span class="my-title" title="' +
+                                                    tooltiptxt + '">' + reqFolderContentObj[c]["Name"][
+                                                    "#text"] + "</span>"
+                                                elementDetails.Name = reqFolderContentObj[c]["Name"]["#text"]
+                                                elementDetails.Parent = curMID + "_" + reqFolderContentObj[c][
+                                                    "CategoryID"
+                                                ]["#text"];
+                                                sfmcContentStructure.push(elementDetails)
+
+                                                // Update SQL List Table 
+                                                if ($('#addSQLActivityList').prop('checked')) {
+                                                    var rowCount = sqllistRows.length
+                                                    // $('#deList tr:last').after('<tr><td>' + rowCount + '</td><td>' + curMID + ' </td><td>' + reqFolderContentObj[c]["Name"]["#text"] + '</td><td>' + reqFolderContentObj[c]["CustomerKey"]["#text"] + '</td><td>' + reqFolderContentObj[c]["CreatedDate"]["#text"] + '</td></tr>')
+                                                    sqllistRows.push({
+                                                        "Row": sqllistRows.length,
+                                                        "MID": curMID,
+                                                        "Name": reqFolderContentObj[c]["Name"]["#text"],
+                                                        "ExternalKey": reqFolderContentObj[c][
+                                                            "CustomerKey"
+                                                        ]["#text"],
+                                                        "Description": String((
+                                                            typeof reqFolderContentObj[c][
+                                                                "Description"
+                                                            ]["#text"] === "undefined" ? "" :
+                                                            reqFolderContentObj[c][
+                                                                "Description"]["#text"])),
+                                                        "CategoryID": reqFolderContentObj[c][
+                                                            "CategoryID"
+                                                        ]["#text"],
+                                                        "CreatedDate": reqFolderContentObj[c][
+                                                            "CreatedDate"
+                                                        ]["#text"],
+                                                        "ModifiedDate": reqFolderContentObj[c][
+                                                            "ModifiedDate"
+                                                        ]["#text"],
+                                                        "TargetDEName": reqFolderContentObj[c][
+                                                            "DataExtensionTarget"
+                                                        ]["Name"]["#text"],
+                                                        "TargetDECustomerKey": reqFolderContentObj[c][
+                                                            "DataExtensionTarget"
+                                                        ]["CustomerKey"]["#text"],
+                                                        "TargetUpdateType": reqFolderContentObj[c][
+                                                            "TargetUpdateType"
+                                                        ]["#text"],
+                                                        "QueryText": "<pre class='prettyprint'>" +
+                                                            reqFolderContentObj[c]["QueryText"][
+                                                            "#text"] + "</pre></i><br>"
+                                                    })
+                                                }
+                                            } catch (err) {
+                                                // alert(reqFolderContentObj[c]["Name"]["#text"]);
+                                            }
+                                            break
+                                        case "automations": // AUTOMATIONS
+                                            debugger
+                                            try {
+
+                                                var tooltiptxt = "<i>Name:         " + reqFolderContentObj[c][
+                                                        "Name"
+                                                    ]["#text"] + "</i><br>" +
+                                                    "<i>CustomerKey:  " + reqFolderContentObj[c]["CustomerKey"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>CreatedDate:  " + reqFolderContentObj[c]["CreatedDate"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>ModifiedDate: " + reqFolderContentObj[c]["ModifiedDate"]
+                                                    ["#text"] + "</i><br>" +
+                                                    "<i>ObjectID:     " + reqFolderContentObj[c]["ObjectID"][
+                                                        "#text"
+                                                    ] + "</i><br>" +
+                                                    "<i>Status:       " + reqFolderContentObj[c]["Status"][
+                                                        "#text"
+                                                    ] + "</i><br>"
+
+                                                //alert(JSON.stringify(reqFolderContentObj[c]))				 
+                                                var elementDetails = {
+                                                    key: "",
+                                                    title: "",
+                                                    Parent: "",
+                                                    folder: false,
+                                                    tooltip: reqFolderContentObj[c]["Name"]["#text"],
+                                                    icon: "https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/sqlactivity.png",
+                                                    children: []
+                                                }
+                                                elementDetails.key = reqFolderContentObj[c]["CustomerKey"][
+                                                    "#text"
+                                                ];
+                                                elementDetails.title = '<span class="my-title" title="' +
+                                                    tooltiptxt + '">' + reqFolderContentObj[c]["Name"][
+                                                    "#text"] + "</span>"
+                                                elementDetails.Name = reqFolderContentObj[c]["Name"]["#text"]
+                                                elementDetails.Parent = curMID +
+                                                    "_0" //+ reqFolderContentObj[c]["CategoryID"]["#text"];
+                                                sfmcContentStructure.push(elementDetails)
+
+                                            } catch (err) {
+                                                alert(err)
+                                            }
+                                            break
+                                    } //switch(ContentType)
+                                }
+                            } else {
+                                break
+                            }
+                            debugger
+                            if (OverallStatus === "MoreDataAvailable") {
+
+                                MoreDataAvailabe = true;
+                                GetMoreData = true;
+                            }
+                        } catch (err) {
+                            GetMoreData = false
+                        }
+                    }
+
+                    //************************************************ Get List Count
+                    var ClientId = $("#txtClientId").val()
+                    var ClientSecret = $("#txtClientSecret").val()
+                    if (ContentType == "list" && ListID.length > 0) {
+                        var stringified_sfmcContentStructure = JSON.stringify(sfmcContentStructure)
+                        if (ClientId && ClientSecret) {
+                            var listCountURL = "https://pages.s7.exacttarget.com/rest_get_lists_count?";
+                            var ListCount_Response = $.ajax({
+                                type: "GET",
+                                url: listCountURL + "ListID=" + ListID,
+                                data: {
+                                    "clientId": ClientId,
+                                    "clientSecret": ClientSecret
+                                },
+                                cache: false,
+                                async: false,
+                                beforeSend: function () {
+                                    $("#spinner").show();
+                                    return true
+                                },
+                                complete: function () {
+                                    $("#spinner").hide();
+                                }
+                            })
+                            var ListCount = eval(eval(ListCount_Response.responseText));
+                            for (ls in ListCount) {
+                                //alert(ListCount[ls].listId +" "+ListCount[ls].subscriberCount)
+                                stringified_sfmcContentStructure = stringified_sfmcContentStructure.replace(
+                                    "PlaceHolderCount" + ListCount[ls].listId, numberWithCommas(parseInt(
+                                        ListCount[ls].subscriberCount)))
+                            }
+                        } else {
+                            for (ls in ListID) {
+                                stringified_sfmcContentStructure = stringified_sfmcContentStructure.replace(
+                                    "<small>Count:" + " <b>PlaceHolderCount" + ListID[ls] + "</b></small>",
+                                    "")
+                            }
+                        }
+                        var sfmcContentStructure = JSON.parse(stringified_sfmcContentStructure)
+                    }
+                    //************************************************ Get List Count
+
+                    // ********************************** Folders Content
+                }
+                // Folders Structure and Content
+                // var myTree = JSON.stringify(buildHierarchy(sfmcContentStructure), null, 2)
+                // document.getElementById("finaljsnstr").innerHTML += JSON.stringify(buildHierarchy(sfmcContentStructure), null, 2)
+                var myTree = buildHierarchy(sfmcContentStructure)
+
+                // debugger
+
+                // Update Field List
+                var Counter = 0
+                var StartTime = new Date()
+                var FinishTime = new Date()
+                if ($('#addSchemaDefinition').prop('checked')) {
+                    for (der in delistRows) {
+                        try {
+                            var deFieldList = buildDEDefinition(delistRows[der].ExternalKey, delistRows[der]
+                                .Name, delistRows[der].MID, delistRows[der].MID, false)
+                            // alert(delistRows[der].MID + " " + delistRows[der].Name + " " + delistRows[der].ExternalKey + " " + delistRows[der].CreatedDate)
+                            delistRows[der].FieldList = JSON.stringify(deFieldList)
+
+
+                            ////Add you logic here, for example find a field of specific type, name etc... for(fl in deFieldList) 
+                            //for (fl = 0; fl < deFieldList.length; fl++)
+                            //{
+                            //	//debugger
+                            //	if(deFieldList[fl].FieldName.includes("GRB"))
+                            //	{
+                            //	  delistRows[der].GRBFieldType = deFieldList[fl].DataType
+                            //	}else{
+                            //	  delistRows[der].GRBFieldType = ""
+                            //	}
+                            //	
+                            //}
+
+
+                            //debugger
+                            Counter++
+                            if (Counter == 100) {
+                                var FinishTime = new Date()
+                                alert("StartTime:" + StartTime + "|FinishTime:" + FinishTime +
+                                    "|   Number of processed Rows: " + der)
+                                var StartTime = new Date()
+                                Counter = 0
+                            }
+                        } catch {
+                            // delistRows[der].GRBFieldType = "Processing Error"
+                        }
+                        //if (der === "20") { break; }
+                    }
+                }
+
+                return myTree
+                // *************************** Final Structure *************************************
+            }
+
+            function getParameter(strParamName) {
+                var strReturn = "";
+                var strQueryString = window.location.href;
+                var aQueryString = strQueryString.split("&");
+                for (var iParam = 0; iParam < aQueryString.length; iParam++) {
+                    if (aQueryString[iParam].indexOf(strParamName + "=") > -1) {
+                        var aParam = aQueryString[iParam].split("=");
+                        strReturn = aParam[1];
+                        break;
+                    }
+                }
+                return strReturn;
+            }
+            $('#genericModalForm').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget)
+                var modal = $(this)
+                modal.find('.modal-title').text(button.data('title'))
+                if (button.data('type') === 'json') {
+                    modal.find('.json').show()
+                    modal.find('.json').html(button.data('body'))
+                } else {
+                    modal.find('.json').hide()
+                    modal.find('.modal-body').text(button.data('body'))
+                }
+
+            })
+
+            function syntaxHighlight(json) {
+                json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return json.replace(
+                    /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+                    function (match) {
+                        var cls = 'number';
+                        if (/^"/.test(match)) {
+                            if (/:$/.test(match)) {
+                                cls = 'key';
+                            } else {
+                                cls = 'string';
+                            }
+                        } else if (/true|false/.test(match)) {
+                            cls = 'boolean';
+                        } else if (/null/.test(match)) {
+                            cls = 'null';
+                        }
+                        return '<span class="' + cls + '">' + match + '</span>';
+                    });
+            }
+            const prettyPrintJson = {
+                toHtml: (thing) => {
+                    const htmlEntities = (string) => {
+                        // Makes text displayable in browsers
+                        return string
+                            .replace(/&/g, '&amp;')
+                            .replace(/\\"/g, '&bsol;&quot;')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;');
+                    };
+                    const replacer = (match, p1, p2, p3, p4) => {
+                        // Converts the four parenthesized capture groups into HTML
+                        const part = {
+                            indent: p1,
+                            key: p2,
+                            value: p3,
+                            end: p4
+                        };
+                        const key = '<span class=json-key>';
+                        const val = '<span class=json-value>';
+                        const bool = '<span class=json-boolean>';
+                        const str = '<span class=json-string>';
+                        const isBool = ['true', 'false'].includes(part.value);
+                        const valSpan = /^"/.test(part.value) ? str : isBool ? bool : val;
+                        const findName = /"([\w]+)": |(.*): /;
+                        const indentHtml = part.indent || '';
+                        const keyHtml = part.key ? key + part.key.replace(findName, '$1$2') +
+                            '</span>: ' : '';
+                        const valueHtml = part.value ? valSpan + part.value + '</span>' : '';
+                        const endHtml = part.end || '';
+                        return indentHtml + keyHtml + valueHtml + endHtml;
+                    };
+                    const jsonLine = /^( *)("[^"]+": )?("[^"]*"|[\w.+-]*)?([{}[\],]*)?$/mg;
+                    return htmlEntities(JSON.stringify(thing, null, 3))
+                        .replace(jsonLine, replacer);
+                }
+            }
+            // Attach the fancytree widget to an existing <div id="tree"> element
+            // and pass the tree options as an argument to the fancytree() function:
+            function wait(ms) {
+                var start = new Date().getTime();
+                var end = start;
+                while (end < start + ms) {
+                    end = new Date().getTime();
+                }
+            }
+            Object.size = function (obj) {
+                var size = 0,
+                    key;
+                for (key in obj) {
+                    if (obj.hasOwnProperty(key)) size++;
+                }
+                return size;
+            }
+            /** Event handlers for our little demo interface*/
+            $("input[name=search]").keyup(function (e) {
+                var n,
+                    tree = $.ui.fancytree.getTree(),
+                    args = "autoApply autoExpand fuzzy hideExpanders highlight leavesOnly nodata".split(
+                        " "),
+                    opts = {},
+                    filterFunc = $("#branchMode").is(":checked") ? tree.filterBranches : tree
+                    .filterNodes,
+                    match = $(this).val();
+
+                $.each(args, function (i, o) {
+                    opts[o] = $("#" + o).is(":checked");
+                });
+                opts.mode = $("#hideMode").is(":checked") ? "hide" : "dimm";
+
+                if (e && e.which === $.ui.keyCode.ESCAPE || $.trim(match) === "") {
+                    $("button#btnResetSearch").click();
+                    return;
+                }
+                if ($("#regex").is(":checked")) {
+                    // Pass function to perform match
+                    n = filterFunc.call(tree, function (node) {
+                        return new RegExp(match, "i").test(node.title);
+                    }, opts);
+                } else {
+                    // Pass a string to perform case insensitive matching
+                    n = filterFunc.call(tree, match, opts);
+                }
+                $("button#btnResetSearch").attr("disabled", false);
+                $("span#matches").text("(" + n + " matches)");
+            }).focus();
+
+            $("button#btnResetSearch").click(function (e) {
+                $("input[name=search]").val("");
+                $("span#matches").text("");
+                tree.clearFilter();
+            }).attr("disabled", true);
+
+            $("fieldset input:checkbox").change(function (e) {
+                var id = $(this).attr("id"),
+                    flag = $(this).is(":checked");
+
+                // Some options can only be set with general filter options (not method args):
+                switch (id) {
+                    case "counter":
+                    case "hideExpandedCounter":
+                        tree.options.filter[id] = flag;
+                        break;
+                }
+                tree.clearFilter();
+                $("input[name=search]").keyup();
+            });
+            addSampleButton({
+                label: "Expand all",
+                class: "my class",
+                newline: false,
+                code: function () {
+                    $("#tree").fancytree("getTree").visit(function (node) {
+                        node.setExpanded();
+                    });
+                }
+            });
+            addSampleButton({
+                label: "Collapse all",
+                newline: false,
+                code: function () {
+                    $("#tree").fancytree("getTree").visit(function (node) {
+                        node.setExpanded(false);
+                    });
+                }
+            });
+            addSampleButton({
+                label: "Filter active branch",
+                newline: false,
+
+                code: function () {
+                    if (!tree.getActiveNode()) {
+                        alert("Please activate a folder.");
+                        return;
+                    }
+                    tree.filterBranches(function (node) {
+                        return node.isActive();
+                    });
+                }
+            });
+
+            addSampleButton({
+                label: "Reset filter",
+                newline: false,
+                code: function () {
+                    tree.clearFilter();
+
+                }
+            });
+
+            addSampleButton({
+                label: "Toggle expand",
+                newline: false,
+                code: function () {
+                    $("#tree").fancytree("getTree").visit(function (node) {
+                        node.toggleExpanded();
+                    });
+                }
+            });
+
+        })
+        DataExtensionName = ''
+
+        function buildjBoxData() {
+            $(".my-title").off();
+            ContentType = $("#txtContentSwitcher").val();
+            var jBoxData = {
+                attach: '.my-title',
+                width: 500,
+                height: "auto",
+                overlay: false,
+                createOnInit: true,
+                draggable: 'title',
+                repositionOnOpen: false,
+                repositionOnContent: false,
+                title: '',
+                // getTitle: 'data-jbox-title',
+                getContent: 'title',
+                // trigger: 'mouseenter'
+                trigger: 'click'
+            }
+            switch (ContentType) {
+                case "dataextension":
+                    jBoxData.title =
+                        '<img style="height: 20px;width:20px;" src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/dataextension.png" alt=""> <b>Data Extension Account Sctructure</b>'
+                    break
+                case "queryactivity":
+                    jBoxData.title =
+                        '<img style="height: 20px;width:20px;" src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/sqlactivity.png" alt=""> <b>Account Query Activity Sctructure</b>'
+                    break
+                case "ELTactivity":
+                    jBoxData.title =
+                        '<img style="height: 20px;width:20px;" src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/importactivity.png" alt=""> <b>Account Import Activity Sctructure</b>'
+                    break
+                case "filterdefinition":
+                    jBoxData.title =
+                        '<img style="height: 20px;width:20px;" src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/marketingcloud.png" alt=""> <b>Account Import Activity</b>'
+                    break
+                default:
+                    jBoxData.title =
+                        '<img style="height: 20px;width:20px;" src="https://image.S7.exacttarget.com/lib/fe8613727c61027571/m/1/marketingcloud.png" alt=""> <b>General Info</b>'
+            }
+            myModal = new jBox('Modal', jBoxData);
+            return true
+        }
+
+        function capitalizeFirstLetter(inStr) {
+            return inStr.replace(/\w\S*/g, function (tStr) {
+                return tStr.charAt(0).toUpperCase() + tStr.substr(1).toLowerCase();
+            });
+        }
+
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function tempAlert(msg, duration) {
+            var el = document.createElement("div");
+            el.setAttribute("style", "position:absolute;top:40%;left:20%;background-color:white;");
+            el.innerHTML = msg;
+            setTimeout(function () {
+                el.parentNode.removeChild(el);
+            }, duration);
+            document.body.appendChild(el);
+        }
+
+        function buildDEDefinition(decustomerkey, dename, MID, MIDName, showstatus = true) {
+            // **********************************  Data Extension Definition
+            DataExtensionName = dename
+            if (showstatus) $('#buildDEDefinitionRow').show()
+            $('#deDefinitionLegend').text(dename + " Data Extension Definition ")
+
+            var UserName = $("#txtUsername").val()
+            var Password = $("#txtPassword").val()
+            if (typeof dedefinition_metadatatable != 'undefined') {
+                $("#deDefinition").DataTable().clear();
+                // $("#deDefinition").DataTable().destroy();
+            }
+            var DE_Definition_Response = $.ajax({
+                type: "GET",
+                url: "https://pages.s7.exacttarget.com/soap_post_dataextension_definition/?DECustomerKey=" +
+                    decustomerkey,
+                data: {
+                    UserName: UserName,
+                    Password: Password,
+                    MID: MID,
+                    MIDName: MIDName
+                },
+                cache: false,
+                async: false,
+                beforeSend: function () {
+                    $('#datatable').hide()
+                    $("#dedefinition_spinner").show();
+                    return true
+                },
+                complete: function () {
+                    $('#datatable').show()
+                    $("#dedefinition_spinner").hide();
+
+                }
+            })
+
+            var DE_DefintionXML = JSON.parse(DE_Definition_Response.responseText).Response
+            var DE_Definition = xml2json.fromStr(DE_DefintionXML, 'string');
+            var rawResp = JSON.parse(DE_Definition);
+
+            var reqDEDefinitionObj = rawResp["soap:Envelope"]["soap:Body"]["RetrieveResponseMsg"]["Results"];
+            var dedefinitionJSON = []
+            //for (d in reqDEDefinitionObj)
+            for (d = 0; d < reqDEDefinitionObj.length; d++) {
+                //alert(JSON.stringify(reqDEDefinitionObj[d]))
+                //var Order        = reqDEDefinitionObj[d]["Ordinal"]["#text"]
+
+                if (reqDEDefinitionObj[d].hasOwnProperty("Ordinal")) {
+                    var Order = reqDEDefinitionObj[d]["Ordinal"]["#text"]
+                    if (typeof Order == 'undefined') Order = 100
+                } else {
+                    var Order = 100
+                }
+                var FieldName = reqDEDefinitionObj[d]["Name"]["#text"]
+                var DataType = reqDEDefinitionObj[d]["FieldType"]["#text"]
+                if (reqDEDefinitionObj[d].hasOwnProperty("MaxLength")) {
+                    var Length = reqDEDefinitionObj[d]["MaxLength"]["#text"]
+                    if (typeof Length == 'undefined') Length = ""
+                } else {
+                    var Length = ""
+                }
+
+
+                var PrimaryKey = reqDEDefinitionObj[d]["IsPrimaryKey"]["#text"]
+                var Nullable = reqDEDefinitionObj[d]["IsRequired"]["#text"]
+                var DefaultValue = reqDEDefinitionObj[d]["DefaultValue"]["#text"]
+                if (typeof DefaultValue == 'undefined') DefaultValue = ""
+                try {
+
+                    dedefinition_metadatatable.row.add([
+                        Order,
+                        FieldName,
+                        DataType,
+                        Length,
+                        PrimaryKey,
+                        Nullable,
+                        DefaultValue
+                    ]).draw()
+                    dedefinitionJSON.push({
+                        Order: Order,
+                        FieldName: FieldName,
+                        DataType: DataType,
+                        Length: Length,
+                        PrimaryKey: PrimaryKey,
+                        Nullable: Nullable,
+                        DefaultValue: DefaultValue
+                    })
+                } catch (err) {
+                    break
+                }
+            }
+            return dedefinitionJSON
+            // ********************************** Data Extension Definition
+
+        }
+
+        function buildDERecords(decustomerkey, dename, MID, MIDName) {
+            var parameters = {
+                DeCustomerKey: decustomerkey,
+                DeName: dename,
+                UserName: UserName,
+                Password: Password,
+                MID: MID,
+                MIDName: MIDName
+            }
+            var parameters = "QP=" + b64EncodeUnicode(JSON.stringify(parameters))
+            openInNewTab(
+                "https://pages.s7.exacttarget.com/page.aspx?QS=1550dccf35ce5f745af786d10d8e8ff9ec3addf95b7e72c9fd9bb28f56d9b982",
+                parameters, "")
+        }
+
+        function openInNewTab(url, param, option) {
+            // Options: _blank, _parent, _self, _top
+            url = url + '&' + param
+            var win = window.open(url, option)
+            win.focus()
+        }
+
+        function b64EncodeUnicode(str) {
+            // first we use encodeURIComponent to get percent-encoded UTF-8,
+            // then we convert the percent encodings into raw bytes which
+            // can be fed into btoa.
+            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+                function toSolidBytes(match, p1) {
+                    return String.fromCharCode('0x' + p1)
+                }))
+        }
+
+        function b64DecodeUnicode(str) {
+            // Going backwards: from bytestream, to percent-encoding, to original string.
+            return decodeURIComponent(atob(str).split('').map(function (c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+            }).join(''))
+        }
+
+        function getExportFileName(type) {
+            var FileName = ''
+            switch (type) {
+                case "DataExtension":
+
+                    FileName = "Data Extension List"
+                    break;
+                case "ImportActivity":
+                    FileName = "Import Activity List"
+                    break;
+                default:
+                    // code block
+            }
+
+            return FileName
+        }
+    </script>
+</body>
+
+</html>
